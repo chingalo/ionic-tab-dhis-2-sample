@@ -65,13 +65,11 @@ export class PasswordInputComponent implements OnInit {
 
   updateValues() {
     const fieldId = this.dataElementId + '-' + this.categoryOptionComboId;
-    if (this.inputFieldValue) {
-      this.onChange.emit({
-        id: fieldId,
-        value: this.inputFieldValue,
-        status: 'not-synced'
-      });
-    }
+    this.onChange.emit({
+      id: fieldId,
+      value: this.inputFieldValue,
+      status: 'not-synced'
+    });
   }
 
   onChangeBarcodeReader(dataResponse) {

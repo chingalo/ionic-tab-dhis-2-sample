@@ -23,13 +23,11 @@
 *
 -->
 <ion-content class="login">
+  <div *ngIf="isLoginProcessActive" class="topSLogan logo" style="margin-bottom: 100px;" padding-bottom margin-bottom>
+    <login-spinner></login-spinner>
+  </div>
   <ion-grid>
-    <!-- <ion-row>
-      <ion-col class="topSLogan logo">
-        <login-spinner></login-spinner>
-      </ion-col>
-    </ion-row> -->
-    <ion-row>
+    <ion-row *ngIf="!isLoginProcessActive">
       <ion-col class="topSLogan">
         <div class="logo">
           <img [src]="logoUrl">
@@ -37,11 +35,28 @@
         <p [translate]="'Innovation in every dimension'"></p>
       </ion-col>
     </ion-row>
-    <ion-row>
-      <ion-col padding-top margin-top>
-        <login-form></login-form>
-      </ion-col>
-    </ion-row>
 
+    <ion-row>
+      <ion-col></ion-col>
+      <ion-col col-auto no-padding no-margin>
+        <ion-row>
+          <ion-col padding-top margin-top>
+            <login-form (onLoginFormReady)="onFormFieldChange($event)"></login-form>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-row>
+              <ion-col>
+                <button [disabled]="!isLoginFormValid" ion-button full text-capitalize (click)="startLoginProcess()">
+                  <span [translate]="'Login'"></span>
+                </button>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+      <ion-col></ion-col>
+    </ion-row>
   </ion-grid>
 </ion-content>

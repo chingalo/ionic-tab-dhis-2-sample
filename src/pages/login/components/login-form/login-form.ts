@@ -21,8 +21,7 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { Component, OnInit, Input } from '@angular/core';
-import { BarcodeSettings } from '../../../../models/barcodeSettings';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CurrentUser } from '../../../../models/currentUser';
 
 /**
@@ -38,19 +37,39 @@ import { CurrentUser } from '../../../../models/currentUser';
 export class LoginFormComponent implements OnInit {
   @Input() currentUser: CurrentUser;
 
-  loginFormFields: any;
-  barcodeSettings: BarcodeSettings;
+  @Output() onLoginFormReady = new EventEmitter();
 
-  // valueType == 'TEXT'
-  // data { id : "", value : ""}
+  loginFormFields: any;
+  loginFormData: any;
+
   constructor() {
     this.loginFormFields = this.getLoginForm();
+    this.loginFormData = {};
   }
 
   ngOnInit() {}
 
   updateValue(data) {
-    console.log(data);
+    const { id } = data;
+    const { value } = data;
+    const fieldId = id.split('-')[0];
+    delete this.loginFormData[fieldId];
+    if (value) {
+      this.loginFormData[fieldId] = value;
+    }
+    if (
+      Object.keys(this.loginFormData).length === this.loginFormFields.length
+    ) {
+      this.onLoginFormReady.emit({
+        status: true,
+        currentUser: this.loginFormData
+      });
+    } else {
+      this.onLoginFormReady.emit({
+        status: false,
+        currentUser: this.loginFormData
+      });
+    }
   }
 
   trackByFn(index, item) {

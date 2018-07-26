@@ -68,15 +68,12 @@ export class TextInputFieldComponent implements OnInit {
   }
 
   updateValues() {
-    console.log('Here');
     const fieldId = this.dataElementId + '-' + this.categoryOptionComboId;
-    if (this.inputFieldValue) {
-      this.onChange.emit({
-        id: fieldId,
-        value: this.inputFieldValue,
-        status: 'not-synced'
-      });
-    }
+    this.onChange.emit({
+      id: fieldId,
+      value: this.inputFieldValue,
+      status: 'not-synced'
+    });
   }
 
   //handling of multi lines data or key values pair

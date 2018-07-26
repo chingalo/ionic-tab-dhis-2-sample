@@ -38,10 +38,27 @@ import { IonicPage, NavController } from 'ionic-angular';
 })
 export class LoginPage implements OnInit {
   logoUrl: string;
+  isLoginFormValid: boolean;
+  isLoginProcessActive: boolean;
 
   constructor(private navCtrl: NavController) {
     this.logoUrl = 'assets/img/logo.png';
+    this.isLoginFormValid = false;
+    this.isLoginProcessActive = false;
   }
 
   ngOnInit() {}
+
+  onFormFieldChange(data) {
+    const { status } = data;
+    const { currentUser } = data;
+    this.isLoginFormValid = status;
+    if (!status) {
+      this.isLoginProcessActive = false;
+    }
+  }
+
+  startLoginProcess() {
+    this.isLoginProcessActive = true;
+  }
 }
