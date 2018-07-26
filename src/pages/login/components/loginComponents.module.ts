@@ -24,12 +24,13 @@
 import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { LoginFormComponent } from './login-form/login-form';
 import { sharedComponentsModule } from '../../../components/sharedComponents.module';
+import { LoginSpinnerComponent } from './login-spinner/login-spinner';
+import { LoginFormComponent } from './login-form/login-form';
 
 @NgModule({
-  declarations: [LoginFormComponent],
+  declarations: [LoginFormComponent, LoginSpinnerComponent],
   imports: [IonicModule, TranslateModule.forChild({}), sharedComponentsModule],
-  exports: [LoginFormComponent]
+  exports: [LoginFormComponent, LoginSpinnerComponent]
 })
 export class loginComponentsModule {}

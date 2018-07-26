@@ -22,6 +22,18 @@
 *
 *
 -->
-{{ barcodeSettings|json }}
-<text-input-field [valueType]="'TEXT'" [barcodeSettings]="barcodeSettings"></text-input-field>
-<text-input-field [valueType]="'TEXT'" [barcodeSettings]="{}"></text-input-field>
+<div *ngIf="loginFormFields">
+  <form>
+    <div *ngFor="let field of loginFormFields;trackBy: trackByFn">
+      <div *ngIf="field.type === 'TEXT'">
+        <text-input-field [dataElementId]="field.id" [categoryOptionComboId]="'login'" (onChange)="updateValue($event)" [placeholder]="field.placehoder"
+          [valueType]="field.type" [barcodeSettings]="field.barcodeSettings"></text-input-field>
+      </div>
+      <div *ngIf="field.type === 'PASSWORD'">
+        <password-input [dataElementId]="field.id" [categoryOptionComboId]="'login'" (onChange)="updateValue($event)" [placeholder]="field.placehoder"
+          [barcodeSettings]="field.barcodeSettings"></password-input>
+      </div>
+
+    </div>
+  </form>
+</div>

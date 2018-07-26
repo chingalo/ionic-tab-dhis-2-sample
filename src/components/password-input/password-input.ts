@@ -33,12 +33,15 @@ import { AppProvider } from '../../providers/app/app';
   selector: 'password-input',
   templateUrl: 'password-input.html'
 })
-export class PasswordInputComponent {
-  @Input() dataElementId;
-  @Input() categoryOptionComboId;
-  @Input() data;
-  @Input() barcodeSettings;
+export class PasswordInputComponent implements OnInit {
+  @Input() dataElementId: string;
+  @Input() categoryOptionComboId: string;
+  @Input() data: any;
+  @Input() barcodeSettings: any;
+  @Input() placeholder: string;
+
   @Output() onChange = new EventEmitter();
+
   inputFieldValue: any;
   showBarcodeScanner: boolean;
 
@@ -47,6 +50,9 @@ export class PasswordInputComponent {
   }
 
   ngOnInit() {
+    if (!this.placeholder) {
+      this.placeholder = '';
+    }
     const { allowBarcodeReaderOnText } = this.barcodeSettings;
     if (allowBarcodeReaderOnText) {
       this.showBarcodeScanner = allowBarcodeReaderOnText;
@@ -59,11 +65,13 @@ export class PasswordInputComponent {
 
   updateValues() {
     const fieldId = this.dataElementId + '-' + this.categoryOptionComboId;
-    this.onChange.emit({
-      id: fieldId,
-      value: this.inputFieldValue,
-      status: 'not-synced'
-    });
+    if (this.inputFieldValue) {
+      this.onChange.emit({
+        id: fieldId,
+        value: this.inputFieldValue,
+        status: 'not-synced'
+      });
+    }
   }
 
   onChangeBarcodeReader(dataResponse) {

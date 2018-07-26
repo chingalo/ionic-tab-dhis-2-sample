@@ -85,7 +85,6 @@ export class NumericalInputFieldComponent implements OnInit {
   //handling of multi lines data or key values pair
   onChangeBarcodeReader(dataResponse) {
     const { isMultlined } = dataResponse;
-    const { isMultidata } = dataResponse;
     const { data } = dataResponse;
     if (!isMultlined && data) {
       if (isNaN(data)) {

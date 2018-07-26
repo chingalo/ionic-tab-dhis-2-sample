@@ -21,8 +21,9 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { BarcodeSettings } from '../../../../models/barcodeSettings';
+import { CurrentUser } from '../../../../models/currentUser';
 
 /**
  * Generated class for the LoginFormComponent component.
@@ -35,19 +36,65 @@ import { BarcodeSettings } from '../../../../models/barcodeSettings';
   templateUrl: 'login-form.html'
 })
 export class LoginFormComponent implements OnInit {
+  @Input() currentUser: CurrentUser;
+
+  loginFormFields: any;
   barcodeSettings: BarcodeSettings;
 
   // valueType == 'TEXT'
   // data { id : "", value : ""}
   constructor() {
-    this.barcodeSettings = {
-      allowBarcodeReaderOnText: true,
-      allowBarcodeReaderOnNumerical: false,
-      activateMultiline: false,
-      keyPairSeparator: ':',
-      multilineSeparator: ';'
-    };
+    this.loginFormFields = this.getLoginForm();
   }
 
   ngOnInit() {}
+
+  updateValue(data) {
+    console.log(data);
+  }
+
+  trackByFn(index, item) {
+    return item && item.id ? item.id : index;
+  }
+
+  getLoginForm() {
+    return [
+      {
+        id: 'serverUrl',
+        placehoder: 'Enter server address',
+        type: 'TEXT',
+        barcodeSettings: {
+          allowBarcodeReaderOnText: true,
+          allowBarcodeReaderOnNumerical: false,
+          activateMultiline: false,
+          keyPairSeparator: ':',
+          multilineSeparator: ';'
+        }
+      },
+      {
+        id: 'username',
+        placehoder: 'Enter username',
+        type: 'TEXT',
+        barcodeSettings: {
+          allowBarcodeReaderOnText: false,
+          allowBarcodeReaderOnNumerical: false,
+          activateMultiline: false,
+          keyPairSeparator: ':',
+          multilineSeparator: ';'
+        }
+      },
+      {
+        id: 'password',
+        placehoder: 'Enter password',
+        type: 'PASSWORD',
+        barcodeSettings: {
+          allowBarcodeReaderOnText: false,
+          allowBarcodeReaderOnNumerical: false,
+          activateMultiline: false,
+          keyPairSeparator: ':',
+          multilineSeparator: ';'
+        }
+      }
+    ];
+  }
 }

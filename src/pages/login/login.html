@@ -23,8 +23,12 @@
 *
 -->
 <ion-content class="login">
-
   <ion-grid>
+    <!-- <ion-row>
+      <ion-col class="topSLogan logo">
+        <login-spinner></login-spinner>
+      </ion-col>
+    </ion-row> -->
     <ion-row>
       <ion-col class="topSLogan">
         <div class="logo">
@@ -33,7 +37,11 @@
         <p [translate]="'Innovation in every dimension'"></p>
       </ion-col>
     </ion-row>
-    <login-form></login-form>
+    <ion-row>
+      <ion-col padding-top margin-top>
+        <login-form></login-form>
+      </ion-col>
+    </ion-row>
 
   </ion-grid>
 </ion-content>

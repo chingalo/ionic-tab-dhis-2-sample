@@ -145,7 +145,6 @@ export class MultiOrganisationUnitTreeComponent implements OnInit {
           },
           error => {
             console.log(JSON.stringify(error));
-            let message = 'Failed to discover organisation unit children';
             this.isOrganisationUnitsFetched = true;
             this.hasOrgUnitChildrenLoaded = true;
             this.hasErrorOccurred = true;

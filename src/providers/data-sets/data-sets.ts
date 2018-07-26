@@ -437,7 +437,6 @@ export class DataSetsProvider {
    */
   downloadDataSetsFromServer(currentUser): Observable<any> {
     let dataSets = [];
-    let counts = 0;
     const { userOrgUnitIds } = currentUser;
     return new Observable(observer => {
       if (userOrgUnitIds && userOrgUnitIds.length == 0) {
@@ -734,7 +733,6 @@ export class DataSetsProvider {
     orgUnitId,
     currentUser: CurrentUser
   ): Observable<any> {
-    const resource = 'dataSetSource';
     let dataSetIds = [];
     return new Observable(observer => {
       this.getAllDataSetSources(currentUser).subscribe(

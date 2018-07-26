@@ -35,12 +35,15 @@ import { AppProvider } from '../../providers/app/app';
   templateUrl: 'text-input-field.html'
 })
 export class TextInputFieldComponent implements OnInit {
-  @Input() dataElementId;
-  @Input() categoryOptionComboId;
-  @Input() data;
-  @Input() valueType;
-  @Input() barcodeSettings;
+  @Input() dataElementId: string;
+  @Input() categoryOptionComboId: string;
+  @Input() data: any;
+  @Input() valueType: string;
+  @Input() barcodeSettings: any;
+  @Input() placeholder: string;
+
   @Output() onChange = new EventEmitter();
+
   inputFieldValue: any;
   showBarcodeScanner: boolean;
 
@@ -49,6 +52,9 @@ export class TextInputFieldComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!this.placeholder) {
+      this.placeholder = '';
+    }
     const { allowBarcodeReaderOnText } = this.barcodeSettings;
     if (allowBarcodeReaderOnText) {
       this.showBarcodeScanner = allowBarcodeReaderOnText;
@@ -56,29 +62,20 @@ export class TextInputFieldComponent implements OnInit {
     const fieldId = this.dataElementId + '-' + this.categoryOptionComboId;
     if (this.data && this.data[fieldId]) {
       this.inputFieldValue = this.data[fieldId].value;
+    } else {
+      this.inputFieldValue = '';
     }
   }
 
   updateValues() {
+    console.log('Here');
     const fieldId = this.dataElementId + '-' + this.categoryOptionComboId;
-    if (
-      this.data &&
-      this.data[fieldId] &&
-      this.inputFieldValue != this.data[fieldId].value
-    ) {
+    if (this.inputFieldValue) {
       this.onChange.emit({
         id: fieldId,
         value: this.inputFieldValue,
         status: 'not-synced'
       });
-    } else if (this.data && !this.data[fieldId]) {
-      if (this.inputFieldValue) {
-        this.onChange.emit({
-          id: fieldId,
-          value: this.inputFieldValue,
-          status: 'not-synced'
-        });
-      }
     }
   }
 
