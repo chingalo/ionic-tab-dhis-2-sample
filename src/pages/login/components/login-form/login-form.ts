@@ -41,13 +41,29 @@ export class LoginFormComponent implements OnInit {
 
   loginFormFields: any;
   loginFormData: any;
+  data: any;
+  isLoading: boolean;
 
   constructor() {
     this.loginFormFields = this.getLoginForm();
     this.loginFormData = {};
+    this.data = {};
+    this.isLoading = true;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loginFormFields.map((field: any) => {
+      const { id } = field;
+      const fieldId = id + '-login';
+      const value = this.currentUser[id];
+      this.data[fieldId] = { id: fieldId, value: value };
+      if (value.trim() !== '') {
+        this.loginFormData[id] = value;
+      }
+    });
+    this.isLoading = false;
+    this.checkingForFormValidity();
+  }
 
   updateValue(data) {
     const { id } = data;
@@ -57,6 +73,10 @@ export class LoginFormComponent implements OnInit {
     if (value) {
       this.loginFormData[fieldId] = value;
     }
+    this.checkingForFormValidity();
+  }
+
+  checkingForFormValidity() {
     if (
       Object.keys(this.loginFormData).length === this.loginFormFields.length
     ) {

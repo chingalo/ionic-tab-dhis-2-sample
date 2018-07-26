@@ -35,13 +35,12 @@
         <p [translate]="'Innovation in every dimension'"></p>
       </ion-col>
     </ion-row>
-
     <ion-row>
       <ion-col></ion-col>
-      <ion-col col-auto no-padding no-margin>
+      <ion-col col-auto no-padding no-margin *ngIf="currentUser">
         <ion-row>
           <ion-col padding-top margin-top>
-            <login-form (onLoginFormReady)="onFormFieldChange($event)"></login-form>
+            <login-form [currentUser]="currentUser" (onLoginFormReady)="onFormFieldChange($event)"></login-form>
           </ion-col>
         </ion-row>
         <ion-row>

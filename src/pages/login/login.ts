@@ -23,6 +23,9 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
+import { TabsPage } from '../tabs/tabs';
+import { UserProvider } from '../../providers/user/user';
+import { CurrentUser } from '../../models/currentUser';
 
 /**
  * Generated class for the LoginPage page.
@@ -41,13 +44,37 @@ export class LoginPage implements OnInit {
   isLoginFormValid: boolean;
   isLoginProcessActive: boolean;
 
-  constructor(private navCtrl: NavController) {
+  currentUser: CurrentUser;
+
+  constructor(
+    private navCtrl: NavController,
+    private userProvider: UserProvider
+  ) {
     this.logoUrl = 'assets/img/logo.png';
     this.isLoginFormValid = false;
     this.isLoginProcessActive = false;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    const defaultCurrentUser: CurrentUser = {
+      serverUrl: 'play.dhis2.org/2.28',
+      username: 'admin',
+      password: 'district',
+      currentLanguage: 'en'
+    };
+    this.userProvider.getCurrentUser().subscribe(
+      (currentUser: CurrentUser) => {
+        if (currentUser && currentUser.username) {
+          this.currentUser = currentUser;
+        } else {
+          this.currentUser = defaultCurrentUser;
+        }
+      },
+      () => {
+        this.currentUser = defaultCurrentUser;
+      }
+    );
+  }
 
   onFormFieldChange(data) {
     const { status } = data;
@@ -60,5 +87,12 @@ export class LoginPage implements OnInit {
 
   startLoginProcess() {
     this.isLoginProcessActive = true;
+    setTimeout(() => {
+      if (confirm('sure')) {
+        this.navCtrl.setRoot(TabsPage);
+      } else {
+        this.isLoginProcessActive = false;
+      }
+    }, 2000);
   }
 }
