@@ -27,6 +27,12 @@ import { EncryptionProvider } from './encryption/encryption';
 import { HttpClientProvider } from './http-client/http-client';
 import { LocalInstanceProvider } from './local-instance/local-instance';
 import { UserProvider } from './user/user';
+import { OrganisationUnitsProvider } from './organisation-units/organisation-units';
+import { BarcodeReaderProvider } from './barcode-reader/barcode-reader';
+import { DataSetsProvider } from './data-sets/data-sets';
+import { GeolocationProvider } from './geolocation/geolocation';
+import { ProgramsProvider } from './programs/programs';
+import { SettingsProvider } from './settings/settings';
 
 export const appProviders = [
   AppTranslationProvider,
@@ -35,5 +41,11 @@ export const appProviders = [
   EncryptionProvider,
   HttpClientProvider,
   LocalInstanceProvider,
-  UserProvider
+  UserProvider,
+  BarcodeReaderProvider,
+  OrganisationUnitsProvider,
+  DataSetsProvider,
+  GeolocationProvider,
+  ProgramsProvider,
+  SettingsProvider
 ];

@@ -14,7 +14,7 @@
 // automatically applied to the <body> element in the app.
 .logo {
   padding-top: 5%;
-  max-width: 25%;
+  max-width: 15%;
   margin: auto;
 }
 
@@ -49,4 +49,11 @@
   color: #ffffff;
   text-transform: lowercase;
   font-size: 0.8rem;
+}
+
+//button for ios
+.button-ios,
+.button-md {
+  margin: 0em;
+  padding: 0em
 }

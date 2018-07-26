@@ -21,8 +21,8 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, OnInit } from '@angular/core';
+import { IonicPage, NavController } from 'ionic-angular';
 
 /**
  * Generated class for the LoginPage page.
@@ -36,10 +36,12 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   selector: 'page-login',
   templateUrl: 'login.html'
 })
-export class LoginPage {
-  constructor(public navCtrl: NavController, public navParams: NavParams) {}
+export class LoginPage implements OnInit {
+  logoUrl: string;
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
+  constructor(private navCtrl: NavController) {
+    this.logoUrl = 'assets/img/logo.png';
   }
+
+  ngOnInit() {}
 }

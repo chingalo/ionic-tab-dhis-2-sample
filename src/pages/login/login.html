@@ -22,15 +22,18 @@
 *
 *
 -->
-<ion-header>
+<ion-content class="login">
 
-  <ion-navbar>
-    <ion-title>login</ion-title>
-  </ion-navbar>
+  <ion-grid>
+    <ion-row>
+      <ion-col class="topSLogan">
+        <div class="logo">
+          <img [src]="logoUrl">
+        </div>
+        <p [translate]="'Innovation in every dimension'"></p>
+      </ion-col>
+    </ion-row>
+    <login-form></login-form>
 
-</ion-header>
-
-
-<ion-content padding>
-
+  </ion-grid>
 </ion-content>

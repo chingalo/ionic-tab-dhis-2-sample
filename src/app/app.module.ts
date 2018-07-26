@@ -33,14 +33,20 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 // Multi-language
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient } from '@angular/common/http';
 import { appProviders } from '../providers';
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
+// Native plugins
+import { HTTP } from '@ionic-native/http';
+import { Network } from '@ionic-native/network';
+import { AppVersion } from '@ionic-native/app-version';
+import { SQLite } from '@ionic-native/sqlite';
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { DatePicker } from '@ionic-native/date-picker';
+import { Geolocation } from '@ionic-native/geolocation';
 
 @NgModule({
   declarations: [MyApp, TabsPage],
@@ -48,19 +54,29 @@ export function createTranslateLoader(http: HttpClient) {
     BrowserModule,
     IonicStorageModule.forRoot(),
     IonicModule.forRoot(MyApp, { scrollAssist: false, autoFocusAssist: false }),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
-    })
+    HttpClientModule,
+    TranslateModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp, TabsPage],
   providers: [
     StatusBar,
+    HTTP,
+    Network,
+    AppVersion,
+    SQLite,
+    HttpClient,
+    Diagnostic,
+    BarcodeScanner,
+    DatePicker,
+    Geolocation,
     SplashScreen,
+    {
+      provide: TranslateLoader,
+      useFactory: (http: HttpClient) =>
+        new TranslateHttpLoader(http, '/assets/i18n/', '.json'),
+      deps: [HttpClient]
+    },
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     ...appProviders
   ]

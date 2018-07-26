@@ -23,15 +23,14 @@
  */
 import { Injectable } from '@angular/core';
 import { HTTP } from '@ionic-native/http';
-import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/timeout';
 import { Observable } from 'rxjs/Observable';
 import { CurrentUser } from '../../models/currentUser';
 import { EncryptionProvider } from '../encryption/encryption';
-import * as _ from 'lodash';
 import { NetworkAvailabilityProvider } from '../network-availability/network-availability';
 import { Storage } from '@ionic/storage';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 /*
   Generated class for the HttpClientProvider provider.
 
@@ -45,7 +44,7 @@ export class HttpClientProvider {
     private http: HTTP,
     private encryption: EncryptionProvider,
     public storage: Storage,
-    private defaultHttp: Http,
+    private defaultHttp: HttpClient,
     private networkProvider: NetworkAvailabilityProvider
   ) {
     this.timeOutTime = 4 * 60 * 1000;
@@ -281,7 +280,7 @@ export class HttpClientProvider {
           apiUrl =
             sanitizedUser.serverUrl +
             this.getUrlBasedOnDhisVersion(url, sanitizedUser);
-          let headers = new Headers();
+          let headers = new HttpHeaders();
           headers.append(
             'Authorization',
             'Basic ' + sanitizedUser.authorizationKey
@@ -321,7 +320,7 @@ export class HttpClientProvider {
           apiUrl =
             sanitizedUser.serverUrl +
             this.getUrlBasedOnDhisVersion(url, sanitizedUser);
-          let headers = new Headers();
+          let headers = new HttpHeaders();
           headers.append(
             'Authorization',
             'Basic ' + sanitizedUser.authorizationKey
@@ -329,7 +328,6 @@ export class HttpClientProvider {
           this.defaultHttp
             .put(apiUrl, data, { headers: headers })
             .timeout(this.timeOutTime)
-            .map(res => res.json())
             .subscribe(
               response => {
                 observer.next(response);
@@ -361,7 +359,7 @@ export class HttpClientProvider {
           apiUrl =
             sanitizedUser.serverUrl +
             this.getUrlBasedOnDhisVersion(url, sanitizedUser);
-          let headers = new Headers();
+          let headers = new HttpHeaders();
           headers.append(
             'Authorization',
             'Basic ' + sanitizedUser.authorizationKey
@@ -369,7 +367,6 @@ export class HttpClientProvider {
           this.defaultHttp
             .delete(apiUrl, { headers: headers })
             .timeout(this.timeOutTime)
-            .map(res => res.json())
             .subscribe(
               response => {
                 observer.next(response);

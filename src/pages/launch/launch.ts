@@ -48,17 +48,11 @@ export class LaunchPage implements OnInit {
     private UserProvider: UserProvider,
     private NetworkAvailabilityProvider: NetworkAvailabilityProvider,
     private appTranslationProvider: AppTranslationProvider
-  ) {}
-
-  ionViewDidLoad() {
-    setTimeout(() => {
-      //this.navCtrl.setRoot(TabsPage);
-    }, 1000);
+  ) {
+    this.logoUrl = 'assets/img/logo.png';
   }
 
   ngOnInit() {
-    this.navCtrl.setRoot('LoginPage');
-    this.logoUrl = 'assets/img/logo.png';
     this.NetworkAvailabilityProvider.setNetworkStatusDetection();
     this.UserProvider.getCurrentUser().subscribe(
       (user: any) => {
