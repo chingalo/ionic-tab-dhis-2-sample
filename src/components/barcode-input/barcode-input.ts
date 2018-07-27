@@ -103,7 +103,7 @@ export class BarcodeInputComponent implements OnInit, OnDestroy {
           );
         } else {
           this.appProvider.setNormalNotification(
-            'Camera is not available for scan'
+            'Camera is not available for scanning'
           );
         }
       },

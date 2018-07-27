@@ -22,10 +22,18 @@
  *
  */
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  ModalOptions,
+  ModalController
+} from 'ionic-angular';
 import { TabsPage } from '../tabs/tabs';
 import { UserProvider } from '../../providers/user/user';
 import { CurrentUser } from '../../models/currentUser';
+
+import * as _ from 'lodash';
+import { AppTranslationProvider } from '../../providers/app-translation/app-translation';
 
 /**
  * Generated class for the LoginPage page.
@@ -45,14 +53,17 @@ export class LoginPage implements OnInit {
   isLoginProcessActive: boolean;
 
   currentUser: CurrentUser;
-
+  topThreeTranslationCodes: Array<string>;
   constructor(
     private navCtrl: NavController,
-    private userProvider: UserProvider
+    private userProvider: UserProvider,
+    private appTranslationProvider: AppTranslationProvider,
+    private modalCtrl: ModalController
   ) {
     this.logoUrl = 'assets/img/logo.png';
     this.isLoginFormValid = false;
     this.isLoginProcessActive = false;
+    this.topThreeTranslationCodes = this.appTranslationProvider.getTopThreeSupportedTranslationCodes();
   }
 
   ngOnInit() {
@@ -76,11 +87,56 @@ export class LoginPage implements OnInit {
     );
   }
 
+  openLocalInstancesSelection() {
+    const options: ModalOptions = {
+      cssClass: 'inset-modal',
+      enableBackdropDismiss: true
+    };
+    const data = {};
+    const modal = this.modalCtrl.create(
+      'LocalInstancesSelectionPage',
+      { data: data },
+      options
+    );
+    modal.onDidDismiss((code: string) => {
+      if (code) {
+        console.log('code : ', code);
+      }
+    });
+    modal.present();
+  }
+
+  openTranslationCodeSelection() {
+    const options: ModalOptions = {
+      cssClass: 'inset-modal',
+      enableBackdropDismiss: true
+    };
+    const data = { currentLanguage: this.currentUser.currentLanguage };
+    const modal = this.modalCtrl.create(
+      'TransalationSelectionPage',
+      { data: data },
+      options
+    );
+    modal.onDidDismiss((code: string) => {
+      if (code) {
+        this.updateTranslationLanguage(code);
+      }
+    });
+    modal.present();
+  }
+
+  updateTranslationLanguage(code) {
+    this.appTranslationProvider.setAppTranslation(code);
+    this.currentUser.currentLanguage = code;
+  }
+
   onFormFieldChange(data) {
     const { status } = data;
     const { currentUser } = data;
     this.isLoginFormValid = status;
-    if (!status) {
+    if (status) {
+      this.currentUser = _.assign({}, this.currentUser, currentUser);
+    } else {
       this.isLoginProcessActive = false;
     }
   }

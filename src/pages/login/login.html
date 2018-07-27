@@ -57,5 +57,29 @@
       </ion-col>
       <ion-col></ion-col>
     </ion-row>
+    <ion-row>
+      <ion-col class="bottomSLogan">
+        <p>
+          <span class="translation-codes" *ngIf="currentUser">
+            <span *ngFor="let code of topThreeTranslationCodes; let currentIndex = index">
+              <span (click)="updateTranslationLanguage(code)" [ngClass]="(currentUser.currentLanguage === code) ?'currentLang' : ''">{{ code }}</span>
+              <span *ngIf="currentIndex < 2">&nbsp;|&nbsp;</span>
+            </span>
+            <span *ngIf="topThreeTranslationCodes.indexOf(currentUser.currentLanguage) === -1">
+              &nbsp;|&nbsp;
+              <span (click)="updateTranslationLanguage(currentUser.currentLanguage)" [ngClass]="'currentLang'">{{ currentUser.currentLanguage }}</span>
+            </span>
+            <span (click)="openTranslationCodeSelection()">
+              &nbsp;
+              <ion-icon name="ios-more"></ion-icon>
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="bottom-sLogan-title">
+            <span [translate]="'Powered by'"></span> HISPTZ </span>
+        </p>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 </ion-content>

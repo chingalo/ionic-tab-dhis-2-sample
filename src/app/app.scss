@@ -57,3 +57,13 @@
   margin: 0em;
   padding: 0em
 }
+
+ion-modal.inset-modal {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  transition: opacity 0.25s ease-in-out;
+  padding: 20vh 7vw;
+}
+
+.required {
+  color: #f53d3d;
+}
