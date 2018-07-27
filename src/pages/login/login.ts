@@ -35,6 +35,9 @@ import { CurrentUser } from '../../models/currentUser';
 import * as _ from 'lodash';
 import { AppTranslationProvider } from '../../providers/app-translation/app-translation';
 
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
+
 /**
  * Generated class for the LoginPage page.
  *
@@ -52,6 +55,8 @@ export class LoginPage implements OnInit {
   isLoginFormValid: boolean;
   isLoginProcessActive: boolean;
 
+  subscriptions: Subscription;
+
   currentUser: CurrentUser;
   topThreeTranslationCodes: Array<string>;
   constructor(
@@ -60,6 +65,7 @@ export class LoginPage implements OnInit {
     private appTranslationProvider: AppTranslationProvider,
     private modalCtrl: ModalController
   ) {
+    this.subscriptions = new Subscription();
     this.logoUrl = 'assets/img/logo.png';
     this.isLoginFormValid = false;
     this.isLoginProcessActive = false;
@@ -143,12 +149,39 @@ export class LoginPage implements OnInit {
 
   startLoginProcess() {
     this.isLoginProcessActive = true;
+    let count = 10000;
+    this.clear();
+    while (count > 0) {
+      const sub = this.setSub(count).subscribe(time => {
+        console.log('Done with subscription : ' + time);
+      });
+      this.subscriptions.add(sub);
+      count -= 1000;
+      console.log(this.subscriptions);
+    }
+
     setTimeout(() => {
+      this.clear();
+      this.isLoginProcessActive = false;
       if (confirm('sure')) {
         this.navCtrl.setRoot(TabsPage);
       } else {
         this.isLoginProcessActive = false;
       }
-    }, 2000);
+    }, 3000);
+  }
+
+  setSub(time): Observable<any> {
+    return new Observable(observer => {
+      setTimeout(() => {
+        observer.next(time);
+        observer.complete();
+      }, time);
+    });
+  }
+
+  clear() {
+    this.subscriptions.unsubscribe();
+    this.subscriptions = new Subscription();
   }
 }
