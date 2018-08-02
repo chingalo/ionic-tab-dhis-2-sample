@@ -26,7 +26,17 @@
   <div class='top-layer'>
     <div padding-top paading-bottom class="process-message-percentage-container" (click)="onCancelProgress()">
       <div class="progress-message">
-        {{ processMessage}}
+        <span *ngIf="showLoader">
+          <span *ngIf="progressPercentage !== '100'">
+            <loading [loadingSize]="'small'"></loading>
+          </span>
+          <span *ngIf="progressPercentage === '100'">
+            <ion-icon name="done-all" color="favorite"></ion-icon>
+          </span>
+        </span>
+        <span>
+          {{ processMessage}}
+        </span>
       </div>
       <div class="progress-percentage">
         <div text-end padding-right>

@@ -37,6 +37,7 @@ export class ProgressBarComponent {
   @Input() progressPercentage: string;
   @Input() processMessage: string;
   @Input() showCancelButton: boolean;
+  @Input() showLoader: boolean;
 
   @Output() cancelProgress = new EventEmitter();
 
