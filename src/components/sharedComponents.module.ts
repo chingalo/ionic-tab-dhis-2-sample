@@ -46,6 +46,7 @@ import { RadioButtonInputComponent } from './radio-button-input/radio-button-inp
 import { TextInputFieldComponent } from './text-input-field/text-input-field';
 import { TrueOnlyInputFieldComponent } from './true-only-input-field/true-only-input-field';
 import { UnitIntervalInputComponent } from './unit-interval-input/unit-interval-input';
+import { ProgressBarComponent } from './progress-bar/progress-bar';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { UnitIntervalInputComponent } from './unit-interval-input/unit-interval-
     RadioButtonInputComponent,
     TextInputFieldComponent,
     TrueOnlyInputFieldComponent,
-    UnitIntervalInputComponent
+    UnitIntervalInputComponent,
+    ProgressBarComponent
   ],
   imports: [IonicModule, TranslateModule.forChild({})],
   exports: [
@@ -93,7 +95,8 @@ import { UnitIntervalInputComponent } from './unit-interval-input/unit-interval-
     RadioButtonInputComponent,
     TextInputFieldComponent,
     TrueOnlyInputFieldComponent,
-    UnitIntervalInputComponent
+    UnitIntervalInputComponent,
+    ProgressBarComponent
   ]
 })
 export class sharedComponentsModule {}

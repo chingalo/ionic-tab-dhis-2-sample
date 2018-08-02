@@ -54,6 +54,17 @@
             </ion-row>
           </ion-col>
         </ion-row>
+
+        <div *ngIf="localInstances && localInstances.length > 1">
+          <div class="strike">
+            <span [translate]="'or'"></span>
+          </div>
+          <button ion-button block clear color="light" text-capitalize (click)="openLocalInstancesSelection()">
+            <img class="side-menu-icon" [src]="offlineIcon" />&nbsp;&nbsp;
+            <span [translate]="'Offline instances'"></span>
+          </button>
+        </div>
+
       </ion-col>
       <ion-col></ion-col>
     </ion-row>

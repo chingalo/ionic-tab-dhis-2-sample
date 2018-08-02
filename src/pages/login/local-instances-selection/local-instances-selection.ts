@@ -21,8 +21,9 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { Component, OnInit } from '@angular/core';
-import { IonicPage, ViewController, NavParams } from 'ionic-angular';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { IonicPage, ViewController } from 'ionic-angular';
+import { Subscription } from 'rxjs/Subscription';
 
 /**
  * Generated class for the LocalInstancesSelectionPage page.
@@ -36,15 +37,39 @@ import { IonicPage, ViewController, NavParams } from 'ionic-angular';
   selector: 'page-local-instances-selection',
   templateUrl: 'local-instances-selection.html'
 })
-export class LocalInstancesSelectionPage implements OnInit {
+export class LocalInstancesSelectionPage implements OnInit, OnDestroy {
   cancelIcon: string;
+  localInstances: Array<any>;
+  subscriptions: Subscription;
 
-  constructor(private navParams: NavParams, private viewCtrl: ViewController) {}
+  constructor(private viewCtrl: ViewController) {
+    this.localInstances = [];
+    this.subscriptions = new Subscription();
+  }
 
   ngOnInit() {
-    const data = this.navParams.get('data');
-    console.log('data : ', data);
     this.cancelIcon = 'assets/icon/cancel.png';
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+    this.subscriptions = new Subscription();
+  }
+
+  getFilteredList(data) {
+    const value = data.target.value;
+    if (value && value.trim() != '') {
+      console.log('value : ' + value);
+    }
+  }
+
+  setCurrentUser(currentUser, currentLanguage) {
+    currentUser.currentLanguage = currentLanguage;
+    this.viewCtrl.dismiss(currentUser);
+  }
+
+  trackByFn(index, item) {
+    return item && item.id ? item.id : index;
   }
 
   dismiss() {

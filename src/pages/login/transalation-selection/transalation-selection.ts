@@ -42,6 +42,7 @@ export class TransalationSelectionPage implements OnInit {
   cancelIcon: string;
   translationCodes: Array<Translation>;
   currentLanguage: string;
+
   constructor(
     private navParams: NavParams,
     private viewCtrl: ViewController,

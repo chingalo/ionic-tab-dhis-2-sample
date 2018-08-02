@@ -56,9 +56,10 @@ export class LoginPage implements OnInit {
   isLoginProcessActive: boolean;
 
   subscriptions: Subscription;
-
+  offlineIcon: string;
   currentUser: CurrentUser;
   topThreeTranslationCodes: Array<string>;
+  localInstances: Array<any>;
   constructor(
     private navCtrl: NavController,
     private userProvider: UserProvider,
@@ -67,9 +68,11 @@ export class LoginPage implements OnInit {
   ) {
     this.subscriptions = new Subscription();
     this.logoUrl = 'assets/img/logo.png';
+    this.offlineIcon = 'assets/icon/offline.png';
     this.isLoginFormValid = false;
     this.isLoginProcessActive = false;
     this.topThreeTranslationCodes = this.appTranslationProvider.getTopThreeSupportedTranslationCodes();
+    this.localInstances = ['', ''];
   }
 
   ngOnInit() {

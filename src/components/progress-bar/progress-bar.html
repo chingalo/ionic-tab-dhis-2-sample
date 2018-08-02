@@ -22,11 +22,21 @@
 *
 *
 -->
-<ion-col col-auto no-padding no-margin>
-  <div float-right>
-    <div class="item-card" color="font-color" ion-button clear text-justify (click)="intiateBarcodeOrQRcode()">
-      <img [src]="icon" />
-      <br>
+<div class='container'>
+  <div class='top-layer'>
+    <div padding-top paading-bottom class="process-message-percentage-container" (click)="onCancelProgress()">
+      <div class="progress-message">
+        {{ processMessage}}
+      </div>
+      <div class="progress-percentage">
+        <div text-end padding-right>
+          {{ progressPercentage }} %
+          <ion-icon *ngIf="showCancelButton" name="close" color="danger"></ion-icon>
+        </div>
+      </div>
     </div>
   </div>
-</ion-col>
+  <div margin-bottom>
+    <div class='bottom-layer' [style.width]="progressPercentage + '%'"></div>
+  </div>
+</div>
