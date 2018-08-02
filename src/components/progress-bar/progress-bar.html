@@ -24,7 +24,7 @@
 -->
 <div class='container'>
   <div class='top-layer'>
-    <div padding-top paading-bottom class="process-message-percentage-container" (click)="onCancelProgress()">
+    <div class="process-message-percentage-container" (click)="onCancelProgress()">
       <div class="progress-message">
         <span *ngIf="showLoader">
           <span *ngIf="progressPercentage !== '100'">
@@ -46,7 +46,7 @@
       </div>
     </div>
   </div>
-  <div margin-bottom>
+  <div>
     <div class='bottom-layer' [style.width]="progressPercentage + '%'"></div>
   </div>
 </div>
