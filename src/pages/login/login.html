@@ -24,7 +24,7 @@
 -->
 <ion-content class="login">
   <div *ngIf="isLoginProcessActive" class="topSLogan logo" style="margin-bottom: 100px;" padding-bottom margin-bottom>
-    <login-spinner></login-spinner>
+    <login-spinner [serverUrl]="currentUser.serverUrl" [keyFlag]="'kenya'"></login-spinner>
   </div>
   <ion-grid>
     <ion-row *ngIf="!isLoginProcessActive">

@@ -47,6 +47,7 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { DatePicker } from '@ionic-native/date-picker';
 import { Geolocation } from '@ionic-native/geolocation';
+import { SystemSettingProvider } from '../providers/system-setting/system-setting';
 
 @NgModule({
   declarations: [MyApp, TabsPage],
@@ -78,7 +79,8 @@ import { Geolocation } from '@ionic-native/geolocation';
       deps: [HttpClient]
     },
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    ...appProviders
+    ...appProviders,
+    SystemSettingProvider
   ]
 })
 export class AppModule {}

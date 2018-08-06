@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 /**
  * Generated class for the LoginSpinnerComponent component.
@@ -11,5 +11,15 @@ import { Component } from '@angular/core';
   templateUrl: 'login-spinner.html'
 })
 export class LoginSpinnerComponent {
+  @Input() keyFlag: string;
+  @Input() serverUrl: string;
+  // @
+
+  // keyFlag  {{ /dhis-web-commons/flags/<name>.png
+  //   currentStyle
+  //   keyApplicationFooter
+  //   applicationTitle
+  //   keyApplicationNotification
+  //   keyApplicationIntro
   constructor() {}
 }

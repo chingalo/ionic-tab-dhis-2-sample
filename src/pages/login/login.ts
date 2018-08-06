@@ -77,7 +77,7 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {
     const defaultCurrentUser: CurrentUser = {
-      serverUrl: 'play.dhis2.org/2.28',
+      serverUrl: 'https://play.dhis2.org/2.28',
       username: 'admin',
       password: 'district',
       currentLanguage: 'en'
@@ -165,12 +165,12 @@ export class LoginPage implements OnInit {
 
     setTimeout(() => {
       this.clear();
-      this.isLoginProcessActive = false;
-      if (confirm('sure')) {
-        this.navCtrl.setRoot(TabsPage);
-      } else {
-        this.isLoginProcessActive = false;
-      }
+      //this.isLoginProcessActive = false;
+      // if (confirm('sure')) {
+      //   this.navCtrl.setRoot(TabsPage);
+      // } else {
+      //   this.isLoginProcessActive = false;
+      // }
     }, 3000);
   }
 
