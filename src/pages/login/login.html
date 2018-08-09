@@ -40,18 +40,17 @@
       <ion-col col-auto no-padding no-margin *ngIf="currentUser">
         <ion-row>
           <ion-col padding-top margin-top>
+            <div *ngIf="isLoginProcessActive">
+              <login-metadata-sync [currentUser]="currentUser" [overAllMessage]="overAllLoginMessage" [isOnLogin]="isOnLogin" [processes]="processes"></login-metadata-sync>
+            </div>
             <login-form [currentUser]="currentUser" (onLoginFormReady)="onFormFieldChange($event)"></login-form>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
-            <ion-row>
-              <ion-col>
-                <button [disabled]="!isLoginFormValid" ion-button full text-capitalize (click)="startLoginProcess()">
-                  <span [translate]="'Login'"></span>
-                </button>
-              </ion-col>
-            </ion-row>
+            <button [disabled]="!isLoginFormValid" ion-button full text-capitalize (click)="startLoginProcess()">
+              <span [translate]="'Login'"></span>
+            </button>
           </ion-col>
         </ion-row>
 

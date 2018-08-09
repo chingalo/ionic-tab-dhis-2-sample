@@ -27,10 +27,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { sharedComponentsModule } from '../../../components/sharedComponents.module';
 import { LoginSpinnerComponent } from './login-spinner/login-spinner';
 import { LoginFormComponent } from './login-form/login-form';
+import { LoginMetadataSyncComponent } from './login-metadata-sync/login-metadata-sync';
 
 @NgModule({
-  declarations: [LoginFormComponent, LoginSpinnerComponent],
+  declarations: [
+    LoginFormComponent,
+    LoginSpinnerComponent,
+    LoginMetadataSyncComponent
+  ],
   imports: [IonicModule, TranslateModule.forChild({}), sharedComponentsModule],
-  exports: [LoginFormComponent, LoginSpinnerComponent]
+  exports: [
+    LoginFormComponent,
+    LoginSpinnerComponent,
+    LoginMetadataSyncComponent
+  ]
 })
 export class loginComponentsModule {}

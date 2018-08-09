@@ -21,7 +21,7 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -50,16 +50,18 @@ import { Subscription } from 'rxjs/Subscription';
   selector: 'page-login',
   templateUrl: 'login.html'
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, OnDestroy {
   logoUrl: string;
   isLoginFormValid: boolean;
   isLoginProcessActive: boolean;
-
+  isOnLogin: boolean;
+  overAllLoginMessage: string;
   subscriptions: Subscription;
   offlineIcon: string;
   currentUser: CurrentUser;
-  topThreeTranslationCodes: Array<string>;
-  localInstances: Array<any>;
+  topThreeTranslationCodes: string[];
+  localInstances: string[];
+  processes: string[];
   constructor(
     private navCtrl: NavController,
     private userProvider: UserProvider,
@@ -71,8 +73,24 @@ export class LoginPage implements OnInit {
     this.offlineIcon = 'assets/icon/offline.png';
     this.isLoginFormValid = false;
     this.isLoginProcessActive = false;
+    this.isOnLogin = true;
     this.topThreeTranslationCodes = this.appTranslationProvider.getTopThreeSupportedTranslationCodes();
-    this.localInstances = ['', ''];
+    this.localInstances = [];
+    this.processes = [
+      'organisationUnits',
+      'sections',
+      'dataElements',
+      'smsCommand',
+      'programs',
+      'programStageSections',
+      'programRules',
+      'indicators',
+      'programRuleActions',
+      'programRuleVariables',
+      'dataSets',
+      'reports',
+      'constants'
+    ];
   }
 
   ngOnInit() {
@@ -151,9 +169,10 @@ export class LoginPage implements OnInit {
   }
 
   startLoginProcess() {
+    this.overAllLoginMessage = this.currentUser.serverUrl;
     this.isLoginProcessActive = true;
     let count = 10000;
-    this.clear();
+    this.clearAllSubscriptions();
     while (count > 0) {
       const sub = this.setSub(count).subscribe(time => {
         console.log('Done with subscription : ' + time);
@@ -164,7 +183,7 @@ export class LoginPage implements OnInit {
     }
 
     setTimeout(() => {
-      this.clear();
+      this.clearAllSubscriptions();
       //this.isLoginProcessActive = false;
       // if (confirm('sure')) {
       //   this.navCtrl.setRoot(TabsPage);
@@ -183,8 +202,19 @@ export class LoginPage implements OnInit {
     });
   }
 
-  clear() {
+  clearAllSubscriptions() {
     this.subscriptions.unsubscribe();
     this.subscriptions = new Subscription();
+  }
+
+  ngOnDestroy() {
+    this.logoUrl = null;
+    this.isLoginFormValid = null;
+    this.isLoginProcessActive = null;
+    this.offlineIcon = null;
+    this.currentUser = null;
+    this.topThreeTranslationCodes = null;
+    this.localInstances = null;
+    this.processes = null;
   }
 }
