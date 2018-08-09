@@ -9,6 +9,7 @@ progress-bar {
     background-color: map-get($colors, primary);
     transition: width .4s ease-in-out;
     margin-bottom: 8px;
+    margin-top: 5px;
   }
   .top-layer {
     z-index: 2;

@@ -21,7 +21,14 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { Component, OnDestroy, OnInit, Input } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter
+} from '@angular/core';
 
 import { CurrentUser } from '../../../../models/currentUser';
 import { QueueManager } from '../../../../models/queueManager';
@@ -45,6 +52,8 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   @Input() isOnLogin: boolean;
   @Input() overAllMessage: string;
 
+  @Output() cancelProgress = new EventEmitter();
+
   savingingQueueManager: QueueManager;
   downloadingQueueManager: QueueManager;
   subscriptions: Subscription;
@@ -63,11 +72,14 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     if (this.processes) {
+      this.processMessage = 'Loading';
       this.resetQueueManager();
     }
   }
 
-  onCancelProgess() {}
+  onCancelProgess() {
+    this.cancelProgress.emit();
+  }
 
   resetQueueManager() {
     this.savingingQueueManager = {

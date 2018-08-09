@@ -26,7 +26,11 @@
   <div *ngIf="isLoginProcessActive" class="topSLogan logo" style="margin-bottom: 100px;" padding-bottom margin-bottom>
     <login-spinner [serverUrl]="currentUser.serverUrl" [keyFlag]="'kenya'"></login-spinner>
   </div>
-  <ion-grid>
+  <div margin padding-top *ngIf="isLoginProcessActive">
+    <login-metadata-sync [currentUser]="currentUser" (cancelProgress)="onCancelLoginProcess()" [overAllMessage]="overAllLoginMessage"
+      [isOnLogin]="isOnLogin" [processes]="processes"></login-metadata-sync>
+  </div>
+  <ion-grid class="animated fadeIn">
     <ion-row *ngIf="!isLoginProcessActive">
       <ion-col class="topSLogan">
         <div class="logo">
@@ -35,25 +39,21 @@
         <p [translate]="'Innovation in every dimension'"></p>
       </ion-col>
     </ion-row>
-    <ion-row>
-      <ion-col></ion-col>
+    <ion-row *ngIf="!isLoginProcessActive">
+      <ion-col no-padding no-margin></ion-col>
       <ion-col col-auto no-padding no-margin *ngIf="currentUser">
         <ion-row>
-          <ion-col padding-top margin-top>
-            <div *ngIf="isLoginProcessActive">
-              <login-metadata-sync [currentUser]="currentUser" [overAllMessage]="overAllLoginMessage" [isOnLogin]="isOnLogin" [processes]="processes"></login-metadata-sync>
-            </div>
+          <ion-col>
             <login-form [currentUser]="currentUser" (onLoginFormReady)="onFormFieldChange($event)"></login-form>
           </ion-col>
         </ion-row>
-        <ion-row>
+        <ion-row *ngIf="!isLoginProcessActive">
           <ion-col>
             <button [disabled]="!isLoginFormValid" ion-button full text-capitalize (click)="startLoginProcess()">
               <span [translate]="'Login'"></span>
             </button>
           </ion-col>
         </ion-row>
-
         <div *ngIf="localInstances && localInstances.length > 1">
           <div class="strike">
             <span [translate]="'or'"></span>
@@ -65,7 +65,7 @@
         </div>
 
       </ion-col>
-      <ion-col></ion-col>
+      <ion-col no-padding no-margin></ion-col>
     </ion-row>
     <ion-row>
       <ion-col class="bottomSLogan">

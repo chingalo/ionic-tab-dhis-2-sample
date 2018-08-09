@@ -23,12 +23,16 @@
 *
 -->
 
-<div>
-  <div *ngIf="isOnLogin">
+<div class="animated fadeIn">
+  <div *ngIf="isOnLogin" class="item-card">
     <progress-bar [progressPercentage]="progressPercentage" (cancelProgress)="onCancelProgess()" [showCancelButton]="showCancelButton"
       [processMessage]="overAllMessage"></progress-bar>
   </div>
 
-  <progress-bar [showLoader]="showLoader" [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
-  <progress-bar [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
+  <div class="item-card">
+    <progress-bar [showLoader]="showLoader" [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
+    <progress-bar [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
+    <progress-bar [showLoader]="showLoader" [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
+    <progress-bar [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
+  </div>
 </div>
