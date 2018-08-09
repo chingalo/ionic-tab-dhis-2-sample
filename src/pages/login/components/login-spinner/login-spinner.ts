@@ -13,13 +13,10 @@ import { Component, Input } from '@angular/core';
 export class LoginSpinnerComponent {
   @Input() keyFlag: string;
   @Input() serverUrl: string;
-  // @
+  @Input() applicationTitle: string;
+  @Input() keyApplicationIntro: string;
+  @Input() keyApplicationFooter: string;
+  @Input() keyApplicationNotification: string;
 
-  // keyFlag  {{ /dhis-web-commons/flags/<name>.png
-  //   currentStyle
-  //   keyApplicationFooter
-  //   applicationTitle
-  //   keyApplicationNotification
-  //   keyApplicationIntro
   constructor() {}
 }
