@@ -49,56 +49,6 @@ export class UserProvider {
    * @param user
    * @returns {Observable<any>}
    */
-  getUserDataFromServer(user, withBaseUrl: boolean = false): Observable<any> {
-    this.http.useBasicAuth(user.username, user.password);
-    let fields =
-      'fields=[:all],organisationUnits[id,name],dataViewOrganisationUnits[id,name],userCredentials[userRoles[name,dataSets[id],programs[id]],programs,dataSets';
-    let url = user.serverUrl.split('/dhis-web-')[0];
-    url = url.split('/api/apps')[0];
-    user.serverUrl = url;
-    url += '/api/me.json?' + fields;
-    let apiurl = url;
-    if (withBaseUrl) {
-      apiurl = this.httpProvider.getUrlBasedOnDhisVersion(url, user);
-    }
-    return new Observable(observer => {
-      this.http
-        .get(apiurl, {}, {})
-        .then(
-          (data: any) => {
-            if (data.data.indexOf('login.action') > -1) {
-              user.serverUrl = user.serverUrl.replace('http://', 'https://');
-              this.getUserDataFromServer(user).subscribe(
-                (data: any) => {
-                  const url = user.serverUrl.split('/dhis-web-')[0];
-                  user.serverUrl = url;
-                  observer.next({ data: data.data, user: user });
-                  observer.complete();
-                },
-                error => {
-                  observer.error(error);
-                }
-              );
-            } else {
-              observer.next({ data: data.data, user: user });
-              observer.complete();
-            }
-          },
-          error => {
-            observer.error(error);
-          }
-        )
-        .catch(error => {
-          observer.error(error);
-        });
-    });
-  }
-
-  /**
-   *
-   * @param user
-   * @returns {Observable<any>}
-   */
   getUserAuthorities(user): Observable<any> {
     this.http.useBasicAuth(user.username, user.password);
     let fields = 'fields=authorities,id,name,dataViewOrganisationUnits';
@@ -125,127 +75,46 @@ export class UserProvider {
     });
   }
 
-  /**
-   *
-   * @param user
-   * @returns {Observable<any>}
-   */
-  authenticateUser(user): Observable<any> {
-    this.http.useBasicAuth(user.username, user.password);
+  getUserDataOnAuthenticatedServer(
+    currentUser: CurrentUser,
+    serverUrl: string,
+    withBaseUrl: boolean = false
+  ): Observable<any> {
+    this.http.useBasicAuth(currentUser.username, currentUser.password);
     return new Observable(observer => {
+      const fields =
+        'fields=[:all],organisationUnits[id,name],dataViewOrganisationUnits[id,name],userCredentials[userRoles[name,dataSets[id],programs[id]],programs,dataSets';
+      serverUrl = serverUrl.split('/dhis-web-')[0];
+      const url = serverUrl + '/api/me.json?' + fields;
+      const apiurl = withBaseUrl
+        ? this.httpProvider.getUrlBasedOnDhisVersion(url, currentUser)
+        : url;
       this.http
-        .get(user.serverUrl + '', {}, {})
-        .then((data: any) => {
-          if (data.status == 200) {
-            const { url } = data;
-            const { headers } = data;
-            const { serverUrl } = user;
-            if (url) {
-              user.serverUrl = url.split('/dhis-web-')[0];
-            } else if (headers) {
-              if (headers['set-cookie']) {
-                headers['set-cookie']
-                  .replace(/\s/g, '')
-                  .split(';')
-                  .map(cookieValue => {
-                    if (cookieValue.indexOf('Path=/') > -1) {
-                      const path = cookieValue.split('Path=/').pop();
-                      const lastUrlPart = serverUrl.split('/').pop();
-                      if (lastUrlPart !== path) {
-                        if (lastUrlPart == '') {
-                          user.serverUrl = serverUrl + path;
-                        } else {
-                          user.serverUrl = serverUrl + '/' + path;
-                        }
-                      }
-                    }
-                  });
-              } else if (headers['Set-cookie']) {
-                headers['set-cookie']
-                  .replace(/\s/g, '')
-                  .split(';')
-                  .map(cookieValue => {
-                    if (cookieValue.indexOf('Path=/') > -1) {
-                      const path = cookieValue.split('Path=/').pop();
-                      const lastUrlPart = serverUrl.split('/').pop();
-                      if (lastUrlPart !== path) {
-                        if (lastUrlPart == '') {
-                          user.serverUrl = serverUrl + path;
-                        } else {
-                          user.serverUrl = serverUrl + '/' + path;
-                        }
-                      }
-                    }
-                  });
-              }
-            }
-            this.getUserDataFromServer(user).subscribe(
-              (data: any) => {
-                const url = user.serverUrl.split('/dhis-web-')[0];
-                user.serverUrl = url;
-                observer.next({ data: data.data, user: data.user });
+        .get(apiurl, {}, {})
+        .then(response => {
+          const { data } = response;
+          if (data && data.indexOf('login.action') > -1) {
+            serverUrl = serverUrl.replace('http://', 'https://');
+            this.getUserDataOnAuthenticatedServer(
+              currentUser,
+              serverUrl
+            ).subscribe(
+              responseData => {
+                const { data } = responseData;
+                observer.next({ serverUrl, currentUser, data });
                 observer.complete();
               },
               error => {
-                const serverUrl = user.serverUrl;
-                const dhisInstanceName = serverUrl.split('/').pop();
-                //for other possible instances such as dev, demo
-                if (dhisInstanceName != 'dhis') {
-                  user.serverUrl = serverUrl + '/dhis';
-                  this.authenticateUser(user).subscribe(
-                    (data: any) => {
-                      const url = user.serverUrl.split('/dhis-web-')[0];
-                      user.serverUrl = url;
-                      observer.next({ data: data, user: user });
-                      observer.complete();
-                    },
-                    error => {
-                      observer.error(error);
-                    }
-                  );
-                } else {
-                  observer.error(error);
-                }
+                observer.error(error);
               }
             );
           } else {
-            observer.error(data);
+            observer.next({ serverUrl, currentUser, data });
+            observer.complete();
           }
         })
         .catch(error => {
-          if (error.status == 301 || error.status == 302) {
-            if (error.headers && error.headers.Location) {
-              user.serverUrl = error.headers.Location;
-              this.authenticateUser(user).subscribe(
-                (data: any) => {
-                  const url = user.serverUrl.split('/dhis-web-')[0];
-                  user.serverUrl = url;
-                  observer.next({ data: data, user: user });
-                  observer.complete();
-                },
-                error => {
-                  observer.error(error);
-                }
-              );
-            } else if (error.headers && error.headers.location) {
-              user.serverUrl = error.headers.location;
-              this.authenticateUser(user).subscribe(
-                (data: any) => {
-                  const url = user.serverUrl.split('/dhis-web-')[0];
-                  user.serverUrl = url;
-                  observer.next({ data: data, user: user });
-                  observer.complete();
-                },
-                error => {
-                  observer.error(error);
-                }
-              );
-            } else {
-              observer.error(error);
-            }
-          } else {
-            observer.error(error);
-          }
+          observer.error(error);
         });
     });
   }
@@ -254,12 +123,8 @@ export class UserProvider {
     currentUser: CurrentUser,
     serverUrl: string
   ): Observable<any> {
-    this.http.clearCookies();
+    this.http.useBasicAuth(currentUser.username, currentUser.password);
     return new Observable(observer => {
-      const authHeader = this.http.getBasicAuthHeader(
-        currentUser.username,
-        currentUser.password
-      );
       this.http
         .get(serverUrl, {}, {})
         .then(data => {
@@ -269,17 +134,20 @@ export class UserProvider {
               data,
               serverUrl
             );
-            this.http.get(newServerUrl, {}, {}).then(
-              res => {
-                observer.next({
-                  res: res,
-                  serverUrl: serverUrl,
-                });
+            this.getUserDataOnAuthenticatedServer(
+              currentUser,
+              newServerUrl
+            ).subscribe(
+              response => {
+                const { data } = response;
+                const { serverUrl } = response;
+                const { currentUser } = response;
+                observer.next({ currentUser, serverUrl, data });
                 observer.complete();
-                console.log(JSON.stringify(res));
               },
               error => {
                 observer.error(error);
+                // try dhis , dev and demo redirect
               }
             );
           } else {

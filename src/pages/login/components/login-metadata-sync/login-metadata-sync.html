@@ -24,7 +24,7 @@
 -->
 
 <div class="animated fadeIn">
-  <div *ngIf="isOnLogin" class="item-card">
+  <div *ngIf="isOnLogin" class="item-card" (click)="onCancelProgess()">
     <progress-bar [progressPercentage]="progressPercentage" (cancelProgress)="onCancelProgess()" [showCancelButton]="showCancelButton"
       [processMessage]="overAllMessage"></progress-bar>
   </div>

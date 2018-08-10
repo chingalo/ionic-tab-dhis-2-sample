@@ -121,10 +121,10 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         .onlineUserAuthentication(currentUser, currentUser.serverUrl)
         .subscribe(
           data => {
-            console.log(JSON.stringify(data));
+            console.log('Success : ' + JSON.stringify(data));
           },
           error => {
-            console.log('error', error);
+            console.log('Error : ' + JSON.stringify(error));
           }
         );
     }
