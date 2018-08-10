@@ -20,6 +20,19 @@
  * @since 2015
  * @author Joseph Chingalo <profschingalo@gmail.com>
  */
+
+// Native plugins
+import { HTTP } from '@ionic-native/http';
+import { Network } from '@ionic-native/network';
+import { AppVersion } from '@ionic-native/app-version';
+import { SQLite } from '@ionic-native/sqlite';
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { DatePicker } from '@ionic-native/date-picker';
+import { Geolocation } from '@ionic-native/geolocation';
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
+
 import { AppTranslationProvider } from '../providers/app-translation/app-translation';
 import { AppProvider } from './app/app';
 import { NetworkAvailabilityProvider } from './network-availability/network-availability';
@@ -34,6 +47,7 @@ import { GeolocationProvider } from './geolocation/geolocation';
 import { ProgramsProvider } from './programs/programs';
 import { SettingsProvider } from './settings/settings';
 import { SystemSettingProvider } from '../providers/system-setting/system-setting';
+import { LocalStorageProvider } from '../providers/local-storage/local-storage';
 
 export const appProviders = [
   AppTranslationProvider,
@@ -49,5 +63,19 @@ export const appProviders = [
   GeolocationProvider,
   ProgramsProvider,
   SettingsProvider,
-  SystemSettingProvider
+  SystemSettingProvider,
+  LocalStorageProvider
+];
+
+export const nativePlugins = [
+  StatusBar,
+  HTTP,
+  Network,
+  AppVersion,
+  SQLite,
+  Diagnostic,
+  BarcodeScanner,
+  DatePicker,
+  Geolocation,
+  SplashScreen
 ];

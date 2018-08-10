@@ -21,13 +21,13 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  */
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/map';
 import { HTTP } from '@ionic-native/http';
 import { Observable } from 'rxjs/Observable';
 import { HttpClientProvider } from '../http-client/http-client';
 import { CurrentUser } from '../../models/currentUser';
 import { EncryptionProvider } from '../encryption/encryption';
+import { LocalStorageProvider } from '../local-storage/local-storage';
 
 /*
  Generated class for the UserProvider provider.
@@ -38,8 +38,8 @@ import { EncryptionProvider } from '../encryption/encryption';
 @Injectable()
 export class UserProvider {
   constructor(
-    public storage: Storage,
-    public http: HTTP,
+    private localStorageProvider: LocalStorageProvider,
+    private http: HTTP,
     private httpProvider: HttpClientProvider,
     private encryptionProvider: EncryptionProvider
   ) {}
@@ -116,6 +116,32 @@ export class UserProvider {
         .catch(error => {
           observer.error(error);
         });
+    });
+  }
+
+  offlineUserAuthentication(user: CurrentUser): Observable<any> {
+    return new Observable(observer => {
+      if (user && user.hashedKeyForOfflineAuthentication) {
+        const hashedKeyForOfflineAuthentication = this.encryptionProvider.getHashedKeyForOfflineAuthentication(
+          user
+        );
+        if (
+          hashedKeyForOfflineAuthentication ==
+          user.hashedKeyForOfflineAuthentication
+        ) {
+          observer.next(user);
+          observer.complete();
+        } else {
+          observer.error({
+            error: 'You have enter wrong username or password or server address'
+          });
+        }
+      } else {
+        observer.error({
+          error:
+            'You can not login offline, please make sure you have network and try in again'
+        });
+      }
     });
   }
 
@@ -206,32 +232,6 @@ export class UserProvider {
     return newServerUrl;
   }
 
-  offlineUserAuthentication(user: CurrentUser): Observable<any> {
-    return new Observable(observer => {
-      if (user && user.hashedKeyForOfflineAuthentication) {
-        const hashedKeyForOfflineAuthentication = this.encryptionProvider.getHashedKeyForOfflineAuthentication(
-          user
-        );
-        if (
-          hashedKeyForOfflineAuthentication ==
-          user.hashedKeyForOfflineAuthentication
-        ) {
-          observer.next(user);
-          observer.complete();
-        } else {
-          observer.error({
-            error: 'You have enter wrong username or password or server address'
-          });
-        }
-      } else {
-        observer.error({
-          error:
-            'You can not login offline, please make sure you have network and try in again'
-        });
-      }
-    });
-  }
-
   /**
    *
    * @param user
@@ -240,7 +240,7 @@ export class UserProvider {
   setCurrentUser(user: any): Observable<any> {
     user = JSON.stringify(user);
     return new Observable(observer => {
-      this.storage.set('user', user).then(
+      this.localStorageProvider.setDataOnLocalStorage(user, 'user').subscribe(
         () => {
           observer.next();
           observer.complete();
@@ -266,15 +266,17 @@ export class UserProvider {
     dhisVersion = dhisVersion.split('-')[0];
     return new Observable(observer => {
       systemInformation = JSON.stringify(systemInformation);
-      this.storage.set('systemInformation', systemInformation).then(
-        () => {
-          observer.next(dhisVersion);
-          observer.complete();
-        },
-        error => {
-          observer.error(error);
-        }
-      );
+      this.localStorageProvider
+        .setDataOnLocalStorage(systemInformation, 'systemInformation')
+        .subscribe(
+          () => {
+            observer.next(dhisVersion);
+            observer.complete();
+          },
+          error => {
+            observer.error(error);
+          }
+        );
     });
   }
 
@@ -300,22 +302,24 @@ export class UserProvider {
       programs: this.getAssignedProgramsId(userDataResponse)
     };
     return new Observable(observer => {
-      this.storage.set('userData', JSON.stringify(userData)).then(
-        () => {
-          this.setProfileInformation(userDataResponse, true).subscribe(
-            () => {
-              observer.next(userData);
-              observer.complete();
-            },
-            error => {
-              observer.error();
-            }
-          );
-        },
-        error => {
-          observer.error(error);
-        }
-      );
+      this.localStorageProvider
+        .setDataOnLocalStorage(JSON.stringify(userData), 'userData')
+        .subscribe(
+          () => {
+            this.setProfileInformation(userDataResponse, true).subscribe(
+              () => {
+                observer.next(userData);
+                observer.complete();
+              },
+              error => {
+                observer.error(error);
+              }
+            );
+          },
+          error => {
+            observer.error(error);
+          }
+        );
     });
   }
 
@@ -353,35 +357,31 @@ export class UserProvider {
           profileInfo[key] = userDataResponse[key];
         }
       });
-      this.storage.set('profileInfo', JSON.stringify(profileInfo)).then(
-        () => {
-          observer.next();
+      this.localStorageProvider
+        .setDataOnLocalStorage(JSON.stringify(profileInfo), 'profileInfo')
+        .subscribe(
+          () => {
+            observer.next();
+            observer.complete();
+          },
+          error => {
+            observer.error(error);
+          }
+        );
+    });
+  }
+
+  getProfileInformation(): Observable<any> {
+    return new Observable(observer => {
+      this.localStorageProvider.getDataOnLocalStorage('profileInfo').subscribe(
+        profileInfo => {
+          observer.next(profileInfo);
           observer.complete();
         },
         error => {
           observer.error(error);
         }
       );
-    });
-  }
-
-  getProfileInformation(): Observable<any> {
-    return new Observable(observer => {
-      this.storage
-        .get('profileInfo')
-        .then(
-          profileInfo => {
-            profileInfo = JSON.parse(profileInfo);
-            observer.next(profileInfo);
-            observer.complete();
-          },
-          error => {
-            observer.error(error);
-          }
-        )
-        .catch(error => {
-          observer.error(error);
-        });
     });
   }
 
@@ -419,7 +419,7 @@ export class UserProvider {
       userData.userCredentials.userRoles.map((userRole: any) => {
         if (userRole.programs) {
           userRole.programs.map((program: any) => {
-            if (programIds.indexOf(program.id) == -1) {
+            if (programIds.indexOf(program.id) === -1) {
               programIds.push(program.id);
             }
           });
@@ -435,21 +435,15 @@ export class UserProvider {
    */
   getUserData(): Observable<any> {
     return new Observable(observer => {
-      this.storage
-        .get('userData')
-        .then(
-          userData => {
-            userData = JSON.parse(userData);
-            observer.next(userData);
-            observer.complete();
-          },
-          error => {
-            observer.error(error);
-          }
-        )
-        .catch(error => {
+      this.localStorageProvider.getDataOnLocalStorage('userData').subscribe(
+        userData => {
+          observer.next(userData);
+          observer.complete();
+        },
+        error => {
           observer.error(error);
-        });
+        }
+      );
     });
   }
 
@@ -459,21 +453,17 @@ export class UserProvider {
    */
   getCurrentUserSystemInformation(): Observable<any> {
     return new Observable(observer => {
-      this.storage
-        .get('systemInformation')
-        .then(
+      this.localStorageProvider
+        .getDataOnLocalStorage('systemInformation')
+        .subscribe(
           systemInformation => {
-            systemInformation = JSON.parse(systemInformation);
             observer.next(systemInformation);
             observer.complete();
           },
           error => {
             observer.error(error);
           }
-        )
-        .catch(error => {
-          observer.error(error);
-        });
+        );
     });
   }
 
@@ -483,9 +473,8 @@ export class UserProvider {
    */
   getCurrentUser(): Observable<any> {
     return new Observable(observer => {
-      this.storage.get('user').then(
+      this.localStorageProvider.getDataOnLocalStorage('user').subscribe(
         user => {
-          user = JSON.parse(user);
           observer.next(user);
           observer.complete();
         },

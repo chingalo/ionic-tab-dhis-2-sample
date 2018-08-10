@@ -34,24 +34,13 @@ import { reducers, effects } from '../store';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
-
 // Multi-language
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { appProviders } from '../providers';
 
-// Native plugins
-import { HTTP } from '@ionic-native/http';
-import { Network } from '@ionic-native/network';
-import { AppVersion } from '@ionic-native/app-version';
-import { SQLite } from '@ionic-native/sqlite';
-import { Diagnostic } from '@ionic-native/diagnostic';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { DatePicker } from '@ionic-native/date-picker';
-import { Geolocation } from '@ionic-native/geolocation';
+// core services and native plugins
+import { appProviders, nativePlugins } from '../providers';
 
 @NgModule({
   declarations: [MyApp, TabsPage],
@@ -67,17 +56,7 @@ import { Geolocation } from '@ionic-native/geolocation';
   bootstrap: [IonicApp],
   entryComponents: [MyApp, TabsPage],
   providers: [
-    StatusBar,
-    HTTP,
-    Network,
-    AppVersion,
-    SQLite,
     HttpClient,
-    Diagnostic,
-    BarcodeScanner,
-    DatePicker,
-    Geolocation,
-    SplashScreen,
     {
       provide: TranslateLoader,
       useFactory: (http: HttpClient) =>
@@ -85,7 +64,8 @@ import { Geolocation } from '@ionic-native/geolocation';
       deps: [HttpClient]
     },
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    ...appProviders
+    ...appProviders,
+    ...nativePlugins
   ]
 })
 export class AppModule {}
