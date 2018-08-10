@@ -1,14 +1,16 @@
 <div class="cubespinner animated fadeIn">
   <div class="face1">
-    <img src="{{ serverUrl + '/dhis-web-commons/flags/'+keyFlag+'.png'}}" alt="The flag from the server">
+    <div *ngIf=" keyFlag && keyFlag!=='' && serverUrl && serverUrl !==''">
+      <img src=" {{ serverUrl+ '/dhis-web-commons/flags/'+keyFlag+ '.png'}} " alt="The flag from the server ">
+    </div>
   </div>
-  <div class="face2 div-with-text">
+  <div class="face2 div-with-text ">
     {{ applicationTitle }}
   </div>
-  <div class="face3 div-with-text"> {{ keyApplicationIntro }}</div>
-  <div class="face4 div-with-text"> {{ keyApplicationFooter }}</div>
-  <div class="face5 div-with-text"> {{ keyApplicationNotification }}</div>
-  <div class="face6 div-with-text">
-    <img src="assets/img/logo.png">
+  <div class="face3 div-with-text "> {{ keyApplicationIntro }}</div>
+  <div class="face4 div-with-text "> {{ keyApplicationFooter }}</div>
+  <div class="face5 div-with-text "> {{ keyApplicationNotification }}</div>
+  <div class="face6 div-with-text ">
+    <img src="assets/img/logo.png ">
   </div>
 </div>

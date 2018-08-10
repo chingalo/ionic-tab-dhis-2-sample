@@ -29,6 +29,11 @@ import { IonicStorageModule } from '@ionic/storage';
 import { MyApp } from './app.component';
 import { TabsPage } from '../pages/tabs/tabs';
 
+//store
+import { reducers, effects } from '../store';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -47,13 +52,14 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { DatePicker } from '@ionic-native/date-picker';
 import { Geolocation } from '@ionic-native/geolocation';
-import { SystemSettingProvider } from '../providers/system-setting/system-setting';
 
 @NgModule({
   declarations: [MyApp, TabsPage],
   imports: [
     BrowserModule,
     IonicStorageModule.forRoot(),
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot(effects),
     IonicModule.forRoot(MyApp, { scrollAssist: false, autoFocusAssist: false }),
     HttpClientModule,
     TranslateModule.forRoot()
@@ -79,8 +85,7 @@ import { SystemSettingProvider } from '../providers/system-setting/system-settin
       deps: [HttpClient]
     },
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    ...appProviders,
-    SystemSettingProvider
+    ...appProviders
   ]
 })
 export class AppModule {}

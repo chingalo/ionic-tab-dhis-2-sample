@@ -33,6 +33,7 @@ import { DataSetsProvider } from './data-sets/data-sets';
 import { GeolocationProvider } from './geolocation/geolocation';
 import { ProgramsProvider } from './programs/programs';
 import { SettingsProvider } from './settings/settings';
+import { SystemSettingProvider } from '../providers/system-setting/system-setting';
 
 export const appProviders = [
   AppTranslationProvider,
@@ -47,5 +48,6 @@ export const appProviders = [
   DataSetsProvider,
   GeolocationProvider,
   ProgramsProvider,
-  SettingsProvider
+  SettingsProvider,
+  SystemSettingProvider
 ];

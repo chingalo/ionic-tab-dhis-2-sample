@@ -24,11 +24,11 @@
 -->
 <ion-content class="login">
   <div *ngIf="isLoginProcessActive" class="topSLogan logo" style="margin-bottom: 100px;" padding-bottom margin-bottom>
-    <login-spinner [serverUrl]="currentUser.serverUrl" [keyFlag]="'kenya'"></login-spinner>
+    <login-spinner></login-spinner>
   </div>
   <div margin padding-top *ngIf="isLoginProcessActive">
-    <login-metadata-sync [currentUser]="currentUser" (cancelProgress)="onCancelLoginProcess()" [overAllMessage]="overAllLoginMessage"
-      [isOnLogin]="isOnLogin" [processes]="processes"></login-metadata-sync>
+    <login-metadata-sync (failOnLogin)="onFailLogin($event)" (successOnLogin)="onSuccessLogin($event)" [currentUser]="currentUser"
+      (cancelProgress)="onCancelLoginProcess()" [overAllMessage]="overAllLoginMessage" [isOnLogin]="isOnLogin" [processes]="processes"></login-metadata-sync>
   </div>
   <ion-grid class="animated fadeIn">
     <ion-row *ngIf="!isLoginProcessActive">
@@ -49,7 +49,7 @@
         </ion-row>
         <ion-row *ngIf="!isLoginProcessActive">
           <ion-col>
-            <button [disabled]="!isLoginFormValid" ion-button full text-capitalize (click)="startLoginProcess()">
+            <button large [disabled]="!isLoginFormValid" ion-button full text-capitalize (click)="startLoginProcess()">
               <span [translate]="'Login'"></span>
             </button>
           </ion-col>

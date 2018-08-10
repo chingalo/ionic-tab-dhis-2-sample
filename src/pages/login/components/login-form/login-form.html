@@ -22,7 +22,7 @@
 *
 *
 -->
-<div *ngIf="loginFormFields && !isLoading" class="animated fadeIn">
+<div *ngIf="loginFormFields && !isLoading">
   <form>
     <div *ngFor="let field of loginFormFields;trackBy: trackByFn">
       <div class="input-field-container">

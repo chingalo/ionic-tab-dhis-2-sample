@@ -250,6 +250,95 @@ export class UserProvider {
     });
   }
 
+  onlineUserAuthentication(
+    currentUser: CurrentUser,
+    serverUrl: string
+  ): Observable<any> {
+    this.http.clearCookies();
+    return new Observable(observer => {
+      const authHeader = this.http.getBasicAuthHeader(
+        currentUser.username,
+        currentUser.password
+      );
+      this.http
+        .get(serverUrl, {}, {})
+        .then(data => {
+          const { status } = data;
+          if (status == 200) {
+            const newServerUrl = this.getServerUrlBasedOnResponseHeader(
+              data,
+              serverUrl
+            );
+            this.http.get(newServerUrl, {}, {}).then(
+              res => {
+                observer.next({
+                  res: res,
+                  authHeader: { authHeader: newServerUrl },
+                  serverUrl: serverUrl
+                });
+                observer.complete();
+                console.log(JSON.stringify(res));
+              },
+              error => {
+                observer.error(error);
+              }
+            );
+          } else {
+            observer.error(data);
+          }
+        })
+        .catch(er => {
+          observer.error(er);
+        });
+    });
+  }
+
+  getServerUrlBasedOnResponseHeader(response, serverUrl) {
+    let newServerUrl = '';
+    const { url } = response;
+    const { headers } = response;
+    if (url) {
+      newServerUrl = url.split('/dhis-web-')[0];
+    } else if (headers) {
+      if (headers['set-cookie']) {
+        headers['set-cookie']
+          .replace(/\s/g, '')
+          .split(';')
+          .map(cookieValue => {
+            if (cookieValue.indexOf('Path=/') > -1) {
+              const path = cookieValue.split('Path=/').pop();
+              const lastUrlPart = serverUrl.split('/').pop();
+              if (lastUrlPart !== path) {
+                if (lastUrlPart == '') {
+                  newServerUrl = serverUrl + path;
+                } else {
+                  newServerUrl = serverUrl + '/' + path;
+                }
+              }
+            }
+          });
+      } else if (headers['Set-cookie']) {
+        headers['set-cookie']
+          .replace(/\s/g, '')
+          .split(';')
+          .map(cookieValue => {
+            if (cookieValue.indexOf('Path=/') > -1) {
+              const path = cookieValue.split('Path=/').pop();
+              const lastUrlPart = serverUrl.split('/').pop();
+              if (lastUrlPart !== path) {
+                if (lastUrlPart == '') {
+                  newServerUrl = serverUrl + path;
+                } else {
+                  newServerUrl = serverUrl + '/' + path;
+                }
+              }
+            }
+          });
+      }
+    }
+    return newServerUrl;
+  }
+
   offlineUserAuthentication(user: CurrentUser): Observable<any> {
     return new Observable(observer => {
       if (user && user.hashedKeyForOfflineAuthentication) {

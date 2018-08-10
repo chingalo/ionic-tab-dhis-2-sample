@@ -34,6 +34,7 @@ import { CurrentUser } from '../../models/currentUser';
 
 import * as _ from 'lodash';
 import { AppTranslationProvider } from '../../providers/app-translation/app-translation';
+import { AppProvider } from '../../providers/app/app';
 
 /**
  * Generated class for the LoginPage page.
@@ -58,10 +59,12 @@ export class LoginPage implements OnInit, OnDestroy {
   topThreeTranslationCodes: string[];
   localInstances: string[];
   processes: string[];
+
   constructor(
     private navCtrl: NavController,
     private userProvider: UserProvider,
     private appTranslationProvider: AppTranslationProvider,
+    private appProvider: AppProvider,
     private modalCtrl: ModalController
   ) {
     this.logoUrl = 'assets/img/logo.png';
@@ -90,7 +93,7 @@ export class LoginPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     const defaultCurrentUser: CurrentUser = {
-      serverUrl: 'https://play.dhis2.org/2.28',
+      serverUrl: 'play.dhis2.org/2.28',
       username: 'admin',
       password: 'district',
       currentLanguage: 'en'
@@ -165,6 +168,16 @@ export class LoginPage implements OnInit, OnDestroy {
 
   onCancelLoginProcess() {
     this.isLoginProcessActive = false;
+  }
+
+  onFailLogin(errorReponse) {
+    const { error } = errorReponse;
+    this.appProvider.setNormalNotification(error);
+    this.onCancelLoginProcess();
+  }
+
+  onSuccessLogin(data) {
+    this.currentUser = data
   }
 
   startLoginProcess() {

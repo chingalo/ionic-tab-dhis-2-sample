@@ -36,6 +36,10 @@ import { QueueManager } from '../../../../models/queueManager';
 import { Subscription } from 'rxjs/Subscription';
 import * as _ from 'lodash';
 
+import { NetworkAvailabilityProvider } from '../../../../providers/network-availability/network-availability';
+import { UserProvider } from '../../../../providers/user/user';
+import { AppProvider } from '../../../../providers/app/app';
+
 /**
  * Generated class for the LoginMetadataSyncComponent component.
  *
@@ -47,12 +51,21 @@ import * as _ from 'lodash';
   templateUrl: 'login-metadata-sync.html'
 })
 export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
-  @Input() currentUser: CurrentUser;
-  @Input() processes: string[];
-  @Input() isOnLogin: boolean;
-  @Input() overAllMessage: string;
+  @Input()
+  currentUser: CurrentUser;
+  @Input()
+  processes: string[];
+  @Input()
+  isOnLogin: boolean;
+  @Input()
+  overAllMessage: string;
 
-  @Output() cancelProgress = new EventEmitter();
+  @Output()
+  cancelProgress = new EventEmitter();
+  @Output()
+  successOnLogin = new EventEmitter();
+  @Output()
+  failOnLogin = new EventEmitter();
 
   savingingQueueManager: QueueManager;
   downloadingQueueManager: QueueManager;
@@ -63,7 +76,11 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   processMessage: string;
   progressPercentage: string;
 
-  constructor() {
+  constructor(
+    private networkAvailabilityProvider: NetworkAvailabilityProvider,
+    private userProvider: UserProvider,
+    private appProvider: AppProvider
+  ) {
     this.showLoader = true;
     this.showCancelButton = true;
     this.subscriptions = new Subscription();
@@ -75,6 +92,46 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       this.processMessage = 'Loading';
       this.resetQueueManager();
     }
+    if (this.isOnLogin) {
+      const currentUser = _.assign({}, this.currentUser);
+
+      this.authenticateUser(currentUser, this.processes);
+    } else {
+      this.syncMetadata(this.processes);
+    }
+  }
+
+  authenticateUser(currentUser: CurrentUser, processes: string[]) {
+    currentUser.serverUrl = this.appProvider.getFormattedBaseUrl(
+      currentUser.serverUrl
+    );
+    const networkStatus = this.networkAvailabilityProvider.getNetWorkStatus();
+    const { isAvailable } = networkStatus;
+    if (!isAvailable) {
+      this.userProvider.offlineUserAuthentication(currentUser).subscribe(
+        user => {
+          this.successOnLogin.emit({ currentUser: user });
+        },
+        error => {
+          this.failOnLogin.emit(error);
+        }
+      );
+    } else {
+      this.userProvider
+        .onlineUserAuthentication(currentUser, currentUser.serverUrl)
+        .subscribe(
+          data => {
+            console.log(JSON.stringify(data));
+          },
+          error => {
+            console.log('error', error);
+          }
+        );
+    }
+  }
+
+  syncMetadata(processes: string[]) {
+    console.log(processes);
   }
 
   onCancelProgess() {
@@ -157,7 +214,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
             return process == enqueuedProcess;
           }
         );
-        //this.startSavingProcess(process, data);
+        this.startSavingProcess(process, data);
       }
     }
   }
@@ -179,7 +236,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
             return process == enqueuedProcess;
           }
         );
-        //this.startDownloadProcess(process);
+        this.startDownloadProcess(process);
       }
     }
   }

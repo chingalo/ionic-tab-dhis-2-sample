@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-
+import { Component, Input, OnInit } from '@angular/core';
 /**
  * Generated class for the LoginSpinnerComponent component.
  *
@@ -10,13 +9,21 @@ import { Component, Input } from '@angular/core';
   selector: 'login-spinner',
   templateUrl: 'login-spinner.html'
 })
-export class LoginSpinnerComponent {
-  @Input() keyFlag: string;
-  @Input() serverUrl: string;
-  @Input() applicationTitle: string;
-  @Input() keyApplicationIntro: string;
-  @Input() keyApplicationFooter: string;
-  @Input() keyApplicationNotification: string;
+export class LoginSpinnerComponent implements OnInit {
+  @Input()
+  keyFlag: string;
+  @Input()
+  serverUrl: string;
+  @Input()
+  applicationTitle: string;
+  @Input()
+  keyApplicationIntro: string;
+  @Input()
+  keyApplicationFooter: string;
+  @Input()
+  keyApplicationNotification: string;
 
   constructor() {}
+
+  ngOnInit() {}
 }
