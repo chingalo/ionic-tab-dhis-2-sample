@@ -273,8 +273,7 @@ export class UserProvider {
               res => {
                 observer.next({
                   res: res,
-                  authHeader: { authHeader: newServerUrl },
-                  serverUrl: serverUrl
+                  serverUrl: serverUrl,
                 });
                 observer.complete();
                 console.log(JSON.stringify(res));
