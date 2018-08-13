@@ -94,7 +94,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     }
     if (this.isOnLogin) {
       const currentUser = _.assign({}, this.currentUser);
-
       this.authenticateUser(currentUser, this.processes);
     } else {
       this.syncMetadata(this.processes);
@@ -102,39 +101,66 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   authenticateUser(currentUser: CurrentUser, processes: string[]) {
+    const processTracker = this.getProcessTracker(null, processes);
+    console.log(processTracker);
+
     currentUser.serverUrl = this.appProvider.getFormattedBaseUrl(
       currentUser.serverUrl
     );
     const networkStatus = this.networkAvailabilityProvider.getNetWorkStatus();
     const { isAvailable } = networkStatus;
     if (!isAvailable) {
-      this.userProvider.offlineUserAuthentication(currentUser).subscribe(
-        user => {
-          this.successOnLogin.emit({ currentUser: user });
-        },
-        error => {
-          this.failOnLogin.emit(error);
-        }
-      );
+      const subscription = this.userProvider
+        .offlineUserAuthentication(currentUser)
+        .subscribe(
+          user => {
+            this.successOnLogin.emit({ currentUser: user });
+          },
+          error => {
+            this.failOnLogin.emit(error);
+            this.clearAllSubscriptions();
+          }
+        );
+      this.subscriptions.add(subscription);
     } else {
-      this.userProvider
+      //authenticate user
+      const subscription = this.userProvider
         .onlineUserAuthentication(currentUser, currentUser.serverUrl)
         .subscribe(
-          data => {
+          response => {
+            const { data } = response;
+            const { serverUrl } = response;
+            const { currentUser } = response;
+            this.currentUser = _.assign({}, currentUser);
+            this.currentUser.serverUrl = serverUrl;
+            this.overAllMessage = serverUrl;
+            //loading system settings
             console.log('Success : ' + JSON.stringify(data));
           },
           error => {
-            console.log('Error : ' + JSON.stringify(error));
+            this.failOnLogin.emit(error);
+            this.clearAllSubscriptions();
           }
         );
+      this.subscriptions.add(subscription);
     }
   }
 
   syncMetadata(processes: string[]) {
+    const processTracker = this.getProcessTracker(null, processes);
+    console.log(processTracker);
+  }
+
+  getProcessTracker(currentUser: CurrentUser, processes: string[]) {
+    let processTracker = {};
+
     console.log(processes);
+
+    return processTracker;
   }
 
   onCancelProgess() {
+    this.clearAllSubscriptions();
     this.cancelProgress.emit();
   }
 
