@@ -173,7 +173,7 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   onUpdateCurrentUser(currentUser) {
-    this.currentUser = _.assign({}, this.currentUser,currentUser);
+    this.currentUser = _.assign({}, this.currentUser, currentUser);
   }
 
   onCancelLoginProcess() {
@@ -191,13 +191,13 @@ export class LoginPage implements OnInit, OnDestroy {
     this.currentUser = data;
   }
 
-  onSystemSettingLoaded(data) {
+  onSystemSettingLoaded(data: any, skipSaving?: boolean) {
     const { keyFlag } = data;
     const { keyApplicationFooter } = data;
     const { applicationTitle } = data;
     const { keyApplicationNotification } = data;
     const { keyApplicationIntro } = data;
-    const { currentStyle } = data;
+    const { serverUrl } = this.currentUser;
     if (keyFlag) {
       this.keyFlag = keyFlag;
     }
@@ -213,8 +213,9 @@ export class LoginPage implements OnInit, OnDestroy {
     if (keyApplicationIntro) {
       this.keyApplicationIntro = keyApplicationIntro;
     }
-    //save system settings
-    //this.systemSettings.saveSystemSettings({})
+    if (!skipSaving) {
+      this.systemSettings.saveSystemSettings(data, serverUrl);
+    }
   }
 
   startLoginProcess() {
