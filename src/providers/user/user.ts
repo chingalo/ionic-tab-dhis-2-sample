@@ -165,10 +165,9 @@ export class UserProvider {
               newServerUrl
             ).subscribe(
               response => {
-                const { data } = response;
                 const { serverUrl } = response;
                 const { currentUser } = response;
-                observer.next({ currentUser, serverUrl, data });
+                observer.next({ currentUser, serverUrl });
                 observer.complete();
               },
               error => {
@@ -230,6 +229,23 @@ export class UserProvider {
       }
     }
     return newServerUrl;
+  }
+
+  getCurrentUserSystemInformationFromServer(
+    currentUser: CurrentUser
+  ): Observable<any> {
+    const url = '/api/system/info';
+    return new Observable(observer => {
+      this.httpProvider.get(url, true, currentUser).subscribe(
+        response => {
+          observer.next(response);
+          observer.complete();
+        },
+        error => {
+          observer.error(error);
+        }
+      );
+    });
   }
 
   /**

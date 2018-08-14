@@ -48,6 +48,7 @@ import { ProgramsProvider } from './programs/programs';
 import { SettingsProvider } from './settings/settings';
 import { SystemSettingProvider } from '../providers/system-setting/system-setting';
 import { LocalStorageProvider } from '../providers/local-storage/local-storage';
+import { SqlLiteProvider } from '../providers/sql-lite/sql-lite';
 
 export const appProviders = [
   AppTranslationProvider,
@@ -64,7 +65,8 @@ export const appProviders = [
   ProgramsProvider,
   SettingsProvider,
   SystemSettingProvider,
-  LocalStorageProvider
+  LocalStorageProvider,
+  SqlLiteProvider
 ];
 
 export const nativePlugins = [

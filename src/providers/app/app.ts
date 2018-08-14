@@ -53,7 +53,7 @@ export class AppProvider {
           .create({
             message: data[message],
             position: 'top',
-            duration: 4500
+            duration: 5000
           })
           .present();
       });
@@ -64,7 +64,7 @@ export class AppProvider {
    * @param {string} message
    * @param {number} time
    */
-  setNormalNotification(message: string, time: number = 5000) {
+  setNormalNotification(message: string, time: number = 6000) {
     this.transalationProvider
       .getTransalations([message])
       .subscribe((data: any) => {

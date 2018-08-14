@@ -35,6 +35,7 @@ import { CurrentUser } from '../../models/currentUser';
 import * as _ from 'lodash';
 import { AppTranslationProvider } from '../../providers/app-translation/app-translation';
 import { AppProvider } from '../../providers/app/app';
+import { SystemSettingProvider } from '../../providers/system-setting/system-setting';
 
 /**
  * Generated class for the LoginPage page.
@@ -59,12 +60,18 @@ export class LoginPage implements OnInit, OnDestroy {
   topThreeTranslationCodes: string[];
   localInstances: string[];
   processes: string[];
+  keyFlag: string;
+  keyApplicationFooter: string;
+  applicationTitle: string;
+  keyApplicationNotification: string;
+  keyApplicationIntro: string;
 
   constructor(
     private navCtrl: NavController,
     private userProvider: UserProvider,
     private appTranslationProvider: AppTranslationProvider,
     private appProvider: AppProvider,
+    private systemSettings: SystemSettingProvider,
     private modalCtrl: ModalController
   ) {
     this.logoUrl = 'assets/img/logo.png';
@@ -73,7 +80,6 @@ export class LoginPage implements OnInit, OnDestroy {
     this.isLoginProcessActive = false;
     this.isOnLogin = true;
     this.topThreeTranslationCodes = this.appTranslationProvider.getTopThreeSupportedTranslationCodes();
-    this.localInstances = [];
     this.processes = [
       'organisationUnits',
       'sections',
@@ -166,6 +172,10 @@ export class LoginPage implements OnInit, OnDestroy {
     }
   }
 
+  onUpdateCurrentUser(currentUser) {
+    this.currentUser = _.assign({}, this.currentUser,currentUser);
+  }
+
   onCancelLoginProcess() {
     this.isLoginProcessActive = false;
   }
@@ -181,12 +191,50 @@ export class LoginPage implements OnInit, OnDestroy {
     this.currentUser = data;
   }
 
+  onSystemSettingLoaded(data) {
+    const { keyFlag } = data;
+    const { keyApplicationFooter } = data;
+    const { applicationTitle } = data;
+    const { keyApplicationNotification } = data;
+    const { keyApplicationIntro } = data;
+    const { currentStyle } = data;
+    if (keyFlag) {
+      this.keyFlag = keyFlag;
+    }
+    if (keyApplicationFooter) {
+      this.keyApplicationFooter = keyApplicationFooter;
+    }
+    if (applicationTitle) {
+      this.applicationTitle = applicationTitle;
+    }
+    if (keyApplicationNotification) {
+      this.keyApplicationNotification = keyApplicationNotification;
+    }
+    if (keyApplicationIntro) {
+      this.keyApplicationIntro = keyApplicationIntro;
+    }
+    //save system settings
+    //this.systemSettings.saveSystemSettings({})
+  }
+
   startLoginProcess() {
     this.overAllLoginMessage = this.currentUser.serverUrl;
     this.isLoginProcessActive = true;
+    this.resetLoginSpinnerValues();
   }
 
   ngOnDestroy() {
+    this.resetAllValues();
+  }
+
+  resetLoginSpinnerValues() {
+    this.keyFlag = null;
+    this.keyApplicationFooter = null;
+    this.applicationTitle = null;
+    this.keyApplicationNotification = null;
+    this.keyApplicationIntro = null;
+  }
+  resetAllValues() {
     this.logoUrl = null;
     this.isLoginFormValid = null;
     this.isLoginProcessActive = null;
@@ -195,5 +243,6 @@ export class LoginPage implements OnInit, OnDestroy {
     this.topThreeTranslationCodes = null;
     this.localInstances = null;
     this.processes = null;
+    this.resetLoginSpinnerValues();
   }
 }

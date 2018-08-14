@@ -24,15 +24,16 @@
 -->
 
 <div class="animated fadeIn">
-  <div *ngIf="isOnLogin" class="item-card" (click)="onCancelProgess()">
-    <progress-bar [progressPercentage]="progressPercentage" (cancelProgress)="onCancelProgess()" [showCancelButton]="showCancelButton"
+  <div *ngIf="isOnLogin" class="item-card" (click)="onCancelProgess()" padding-top>
+    <progress-bar [progressPercentage]="progressTrackerPacentage['overall']" (cancelProgress)="onCancelProgess()" [showCancelButton]="showCancelButton"
       [processMessage]="overAllMessage"></progress-bar>
   </div>
 
   <div class="item-card">
-    <progress-bar [showLoader]="showLoader" [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
-    <progress-bar [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
-    <progress-bar [showLoader]="showLoader" [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
-    <progress-bar [progressPercentage]="progressPercentage" [processMessage]="processMessage"></progress-bar>
+    <div *ngFor="let resourceType of trackedResourceTypes;trackBy: trackByFn">
+      <progress-bar [showLoader]="trackedProcessWithLoader[resourceType]" [progressPercentage]="progressTrackerPacentage[resourceType]"
+        [processMessage]="progressTrackerMessage[resourceType]"></progress-bar>
+    </div>
+
   </div>
 </div>

@@ -39,6 +39,8 @@ import * as _ from 'lodash';
 import { NetworkAvailabilityProvider } from '../../../../providers/network-availability/network-availability';
 import { UserProvider } from '../../../../providers/user/user';
 import { AppProvider } from '../../../../providers/app/app';
+import { SqlLiteProvider } from '../../../../providers/sql-lite/sql-lite';
+import { SystemSettingProvider } from '../../../../providers/system-setting/system-setting';
 
 /**
  * Generated class for the LoginMetadataSyncComponent component.
@@ -65,26 +67,37 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   @Output()
   successOnLogin = new EventEmitter();
   @Output()
+  systemSettingLoaded = new EventEmitter();
+  @Output()
+  updateCurrentUser = new EventEmitter();
+  @Output()
   failOnLogin = new EventEmitter();
 
   savingingQueueManager: QueueManager;
   downloadingQueueManager: QueueManager;
   subscriptions: Subscription;
-
   showCancelButton: boolean;
-  showLoader: boolean;
+  trackedResourceTypes: string[];
+  progressTrackerPacentage: any;
+  progressTrackerMessage: any;
+  trackedProcessWithLoader: any;
+
   processMessage: string;
-  progressPercentage: string;
+  progressPercentage: any;
 
   constructor(
     private networkAvailabilityProvider: NetworkAvailabilityProvider,
     private userProvider: UserProvider,
-    private appProvider: AppProvider
+    private appProvider: AppProvider,
+    private sqlLiteProvider: SqlLiteProvider,
+    private systemSettingProvider: SystemSettingProvider
   ) {
-    this.showLoader = true;
     this.showCancelButton = true;
     this.subscriptions = new Subscription();
-    this.progressPercentage = '24';
+    this.progressTrackerPacentage = {};
+    this.progressTrackerMessage = {};
+    this.trackedProcessWithLoader = {};
+    this.progressPercentage = '100';
   }
 
   ngOnInit() {
@@ -92,6 +105,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       this.processMessage = 'Loading';
       this.resetQueueManager();
     }
+    // having clear attribute to deferentiate login and sync module
     if (this.isOnLogin) {
       const currentUser = _.assign({}, this.currentUser);
       this.authenticateUser(currentUser, this.processes);
@@ -101,9 +115,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   authenticateUser(currentUser: CurrentUser, processes: string[]) {
-    const processTracker = this.getProcessTracker(null, processes);
-    console.log(processTracker);
-
     currentUser.serverUrl = this.appProvider.getFormattedBaseUrl(
       currentUser.serverUrl
     );
@@ -117,46 +128,172 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
             this.successOnLogin.emit({ currentUser: user });
           },
           error => {
-            this.failOnLogin.emit(error);
-            this.clearAllSubscriptions();
+            this.onFailToLogin(error);
           }
         );
       this.subscriptions.add(subscription);
     } else {
-      //authenticate user
+      // Reset database name for reauthebticate variables
+      let processTracker = this.getProgressTracker(currentUser, processes);
+      this.trackedResourceTypes = Object.keys(processTracker);
+      this.calculateAndSetProgressPercentage(
+        this.trackedResourceTypes,
+        processTracker
+      );
+      //authenticate user online
       const subscription = this.userProvider
         .onlineUserAuthentication(currentUser, currentUser.serverUrl)
         .subscribe(
           response => {
-            const { data } = response;
             const { serverUrl } = response;
             const { currentUser } = response;
             this.currentUser = _.assign({}, currentUser);
             this.currentUser.serverUrl = serverUrl;
             this.overAllMessage = serverUrl;
-            //loading system settings
-            console.log('Success : ' + JSON.stringify(data));
+            this.currentUser.authorizationKey = btoa(
+              this.currentUser.username + ':' + this.currentUser.password
+            );
+            this.currentUser.currentDatabase = this.appProvider.getDataBaseName(
+              this.currentUser.serverUrl,
+              this.currentUser.username
+            );
+            this.updateCurrentUser.emit(this.currentUser);
+            //loading system info
+            const subscription = this.userProvider
+              .getCurrentUserSystemInformationFromServer(this.currentUser)
+              .subscribe(
+                response => {
+                  //saving system information
+                  const subscription = this.userProvider
+                    .setCurrentUserSystemInformation(response)
+                    .subscribe(
+                      dhisVersion => {
+                        this.currentUser.dhisVersion = dhisVersion;
+                        //loading system settings
+                        console.log(dhisVersion);
+                        const subscription = this.systemSettingProvider
+                          .getSystemSettingsFromServer(this.currentUser)
+                          .subscribe(
+                            systemSettings => {
+                              this.systemSettingLoaded.emit(systemSettings);
+                              //loading user authorities
+                              //loading user data
+                            },
+                            error => {
+                              this.onFailToLogin(error);
+                            }
+                          );
+                        this.subscriptions.add(subscription);
+                      },
+                      error => {
+                        this.onFailToLogin(error);
+                      }
+                    );
+                  this.subscriptions.add(subscription);
+                },
+                error => {
+                  this.onFailToLogin(error);
+                }
+              );
+            this.subscriptions.add(subscription);
           },
           error => {
-            this.failOnLogin.emit(error);
-            this.clearAllSubscriptions();
+            this.onFailToLogin(error);
           }
         );
       this.subscriptions.add(subscription);
     }
   }
 
-  syncMetadata(processes: string[]) {
-    const processTracker = this.getProcessTracker(null, processes);
-    console.log(processTracker);
+  syncMetadata(processes: string[]) {}
+
+  getProgressTracker(currentUser: CurrentUser, processes: string[]) {
+    const emptyProgressTracker = this.getEmptyProcessTracker(processes);
+    let progressTrackerObject =
+      currentUser &&
+      currentUser.currentDatabase &&
+      currentUser.progressTracker &&
+      currentUser.progressTracker[currentUser.currentDatabase]
+        ? currentUser.progressTracker[currentUser.currentDatabase]
+        : emptyProgressTracker;
+    Object.keys(progressTrackerObject).map((key: string) => {
+      this.trackedProcessWithLoader[key] = false;
+      if (key === 'communication') {
+        this.progressTrackerMessage[key] = 'Establishing connection to server';
+        this.trackedProcessWithLoader[key] = true;
+      } else if (key === 'entryForm') {
+        this.progressTrackerMessage[key] = 'Aggregate metadata';
+      } else if (key === 'event') {
+        this.progressTrackerMessage[key] = 'Event and tracker metadata';
+      } else if (key === 'report') {
+        this.progressTrackerMessage[key] = 'Reports metadata';
+      }
+    });
+    return progressTrackerObject;
   }
 
-  getProcessTracker(currentUser: CurrentUser, processes: string[]) {
-    let processTracker = {};
+  getEmptyProcessTracker(processes) {
+    let progressTracker = {};
+    progressTracker['communication'] = {
+      expectedProcesses: this.isOnLogin ? 3 : 2,
+      totalPassedProcesses: 0,
+      passedProcesses: [],
+      message: ''
+    };
+    const dataBaseStructure = this.sqlLiteProvider.getDataBaseStructure();
+    processes.map((process: string) => {
+      const table = dataBaseStructure[process];
+      const { isMetadata } = table;
+      const { resourceType } = table;
+      if (isMetadata && resourceType && resourceType !== '') {
+        if (!progressTracker[resourceType]) {
+          progressTracker[resourceType] = {
+            expectedProcesses: 0,
+            totalPassedProcesses: 0,
+            passedProcesses: [],
+            message: ''
+          };
+        }
+        progressTracker[resourceType].expectedProcesses++;
+      }
+    });
+    return progressTracker;
+  }
 
-    console.log(processes);
+  calculateAndSetProgressPercentage(
+    trackedResourceTypes: string[],
+    processTracker
+  ) {
+    let totalProcesses = 0;
+    let totalExpectedProcesses = 0;
+    trackedResourceTypes.map((trackedResourceType: string) => {
+      const trackedResource = processTracker[trackedResourceType];
+      const { expectedProcesses } = trackedResource;
+      const { totalPassedProcesses } = trackedResource;
+      totalProcesses += totalPassedProcesses;
+      totalExpectedProcesses += expectedProcesses;
+      this.progressTrackerPacentage[trackedResourceType] = this.getPercetage(
+        totalPassedProcesses,
+        expectedProcesses
+      );
+    });
+    this.progressTrackerPacentage['overall'] = this.getPercetage(
+      totalProcesses,
+      totalExpectedProcesses
+    );
+  }
 
-    return processTracker;
+  getPercetage(numerator, denominator) {
+    let percentage = 0;
+    if (numerator && denominator) {
+      percentage = Math.round((numerator / denominator) * 100);
+    }
+    return String(percentage);
+  }
+
+  onFailToLogin(error) {
+    this.clearAllSubscriptions();
+    this.failOnLogin.emit(error);
   }
 
   onCancelProgess() {
@@ -276,11 +413,18 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     this.subscriptions = new Subscription();
   }
 
+  trackByFn(index, item) {
+    return item && item.id ? item.id : index;
+  }
+
   ngOnDestroy() {
+    this.clearAllSubscriptions();
     this.savingingQueueManager = null;
     this.downloadingQueueManager = null;
-    this.showLoader = null;
     this.showCancelButton = null;
-    this.clearAllSubscriptions();
+    this.progressTrackerPacentage = null;
+    this.progressTrackerMessage = null;
+    this.trackedProcessWithLoader = null;
+    this.progressPercentage = null;
   }
 }
