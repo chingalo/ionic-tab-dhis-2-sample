@@ -99,9 +99,9 @@ export class LoginPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     const defaultCurrentUser: CurrentUser = {
-      serverUrl: 'play.dhis2.org/2.28',
-      username: 'admin',
-      password: 'district',
+      serverUrl: 'hisp.dhis2nigeria.org.ng/dhis', //'play.dhis2.org/2.28',
+      username: 'mukulu',
+      password: 'DHIS2017',
       currentLanguage: 'en'
     };
     this.userProvider.getCurrentUser().subscribe(
@@ -214,7 +214,9 @@ export class LoginPage implements OnInit, OnDestroy {
       this.keyApplicationIntro = keyApplicationIntro;
     }
     if (!skipSaving) {
-      this.systemSettings.saveSystemSettings(data, serverUrl);
+      this.systemSettings
+        .saveSystemSettings(data, serverUrl)
+        .subscribe(() => {});
     }
   }
 

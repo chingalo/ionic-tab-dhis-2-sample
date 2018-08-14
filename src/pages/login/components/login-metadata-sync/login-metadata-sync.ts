@@ -170,14 +170,27 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                       dhisVersion => {
                         this.currentUser.dhisVersion = dhisVersion;
                         //loading system settings
-                        console.log(dhisVersion);
                         const subscription = this.systemSettingProvider
                           .getSystemSettingsFromServer(this.currentUser)
                           .subscribe(
                             systemSettings => {
                               this.systemSettingLoaded.emit(systemSettings);
                               //loading user authorities
-                              //loading user data
+                              const subscription = this.userProvider
+                                .getUserAuthorities(this.currentUser)
+                                .subscribe(
+                                  response => {
+                                    console.log(
+                                      'response : ' + JSON.stringify(response)
+                                    );
+                                    //loading user data
+                                    //prepare local storage
+                                  },
+                                  error => {
+                                    this.onFailToLogin(error);
+                                  }
+                                );
+                              this.subscriptions.add(subscription);
                             },
                             error => {
                               this.onFailToLogin(error);

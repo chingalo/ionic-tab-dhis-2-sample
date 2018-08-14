@@ -3,14 +3,43 @@
     <img src="assets/img/logo.png ">
   </div>
   <div class="face2 div-with-text ">
-    {{ applicationTitle }}
+    <span *ngIf="applicationTitle">
+      {{ applicationTitle }}
+    </span>
+    <span *ngIf="!applicationTitle">
+      <img src="assets/img/dhis_log.png ">
+    </span>
   </div>
-  <div class="face3 div-with-text "> {{ keyApplicationIntro }}</div>
+  <div class="face3 div-with-text ">
+    <span *ngIf="keyApplicationIntro">
+      {{ keyApplicationIntro }}
+    </span>
+    <span *ngIf="!keyApplicationIntro">
+      <img src="assets/img/logo.png ">
+    </span>
+  </div>
   <div class="face4">
-    <div *ngIf=" keyFlag && keyFlag!=='' && serverUrl && serverUrl !==''">
+    <span *ngIf="(keyFlag && serverUrl)">
       <img src="{{ serverUrl+ '/dhis-web-commons/flags/'+keyFlag+ '.png'}}" alt="The flag from the server ">
-    </div>
+    </span>
+    <span *ngIf="!(keyFlag && serverUrl)">
+      <img src="assets/img/dhis_log.png ">
+    </span>
   </div>
-  <div class="face5 div-with-text "> {{ keyApplicationNotification }}</div>
-  <div class="face6 div-with-text "> {{ keyApplicationFooter }}</div>
+  <div class="face5 div-with-text ">
+    <span *ngIf="keyApplicationNotification">
+      {{ keyApplicationNotification }}
+    </span>
+    <span *ngIf="!keyApplicationNotification">
+      <img src="assets/img/logo.png ">
+    </span>
+  </div>
+  <div class="face6 div-with-text ">
+    <span *ngIf="keyApplicationFooter">
+      {{ keyApplicationFooter }}
+    </span>
+    <span *ngIf="!keyApplicationFooter">
+      <img src="assets/img/dhis_log.png ">
+    </span>
+  </div>
 </div>

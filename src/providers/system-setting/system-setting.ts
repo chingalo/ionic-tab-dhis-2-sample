@@ -74,7 +74,6 @@ export class SystemSettingProvider {
         .setDataOnLocalStorage(systemSettings, key)
         .subscribe(
           () => {
-            console.log(key);
             observer.next();
             observer.complete();
           },
