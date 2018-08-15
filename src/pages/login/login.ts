@@ -101,10 +101,11 @@ export class LoginPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     const defaultCurrentUser: CurrentUser = {
-      serverUrl: 'hisp.dhis2nigeria.org.ng/dhis', //'play.dhis2.org/2.28',
-      username: 'mukulu',
-      password: 'DHIS2017',
-      currentLanguage: 'en'
+      serverUrl: 'ssudanhis.org', //'play.dhis2.org/2.28',
+      username: 'boma',
+      password: 'Boma_2018',
+      currentLanguage: 'en',
+      progressTracker: {}
     };
     this.userProvider.getCurrentUser().subscribe(
       (currentUser: CurrentUser) => {
@@ -189,8 +190,9 @@ export class LoginPage implements OnInit, OnDestroy {
     this.onCancelLoginProcess();
   }
 
-  onSuccessLogin(data) {
-    this.currentUser = data;
+  onSuccessLogin(currentUser) {
+    console.log('Success sync all metadata ');
+    console.log(JSON.stringify(currentUser));
   }
 
   onSystemSettingLoaded(data: any, skipSaving?: boolean) {

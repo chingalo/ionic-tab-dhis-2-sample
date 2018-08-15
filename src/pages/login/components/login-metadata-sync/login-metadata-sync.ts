@@ -67,7 +67,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   @Output()
   cancelProgress = new EventEmitter();
   @Output()
-  successOnLogin = new EventEmitter();
+  successOnLoginAndSyncMetadata = new EventEmitter();
   @Output()
   systemSettingLoaded = new EventEmitter();
   @Output()
@@ -121,7 +121,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         .offlineUserAuthentication(currentUser)
         .subscribe(
           user => {
-            this.successOnLogin.emit({ currentUser: user });
+            this.successOnLoginAndSyncMetadata.emit({ currentUser: user });
           },
           error => {
             this.onFailToLogin(error);
@@ -136,7 +136,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         this.trackedResourceTypes,
         processTracker
       );
-      //authenticate user online
+
       const subscription = this.userProvider
         .onlineUserAuthentication(currentUser, currentUser.serverUrl)
         .subscribe(
@@ -153,7 +153,14 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
               this.currentUser.serverUrl,
               this.currentUser.username
             );
+            const { currentDatabase } = this.currentUser;
+            this.currentUser.progressTracker[currentDatabase] = processTracker;
             this.updateCurrentUser.emit(this.currentUser);
+            this.updateProgressTrackerObject(
+              'Discovering system info',
+              null,
+              currentResouceType
+            );
             //loading system info
             const subscription = this.userProvider
               .getCurrentUserSystemInformationFromServer(this.currentUser)
@@ -165,6 +172,11 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                     .subscribe(
                       dhisVersion => {
                         this.currentUser.dhisVersion = dhisVersion;
+                        this.updateProgressTrackerObject(
+                          'Discovering system settings',
+                          null,
+                          currentResouceType
+                        );
                         //loading system settings
                         const subscription = this.systemSettingProvider
                           .getSystemSettingsFromServer(this.currentUser)
@@ -172,6 +184,11 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                             systemSettings => {
                               this.systemSettingLoaded.emit(systemSettings);
                               //loading user authorities
+                              this.updateProgressTrackerObject(
+                                'Discovering user authorities',
+                                null,
+                                currentResouceType
+                              );
                               const subscription = this.userProvider
                                 .getUserAuthorities(this.currentUser)
                                 .subscribe(
@@ -183,6 +200,11 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                                     this.currentUser.dataViewOrganisationUnits =
                                       response.dataViewOrganisationUnits;
                                     //loading user data
+                                    this.updateProgressTrackerObject(
+                                      'Discovering user data',
+                                      null,
+                                      currentResouceType
+                                    );
                                     const subscription = this.userProvider
                                       .getUserDataOnAuthenticatedServer(
                                         currentUser,
@@ -203,6 +225,11 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                                               () => {
                                                 if (this.isOnLogin) {
                                                   // preparing local storage
+                                                  this.updateProgressTrackerObject(
+                                                    'Preparing local storage',
+                                                    null,
+                                                    currentResouceType
+                                                  );
                                                   const {
                                                     currentDatabase
                                                   } = this.currentUser;
@@ -279,9 +306,12 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startSyncMetadataProcesses(processes: string[]) {
-    console.log(processes);
+    processes.map(process => {
+      this.addIntoQueue(process, 'dowmloading');
+    });
   }
 
+  // @todo checking for upading tracker object
   getProgressTracker(currentUser: CurrentUser, processes: string[]) {
     const emptyProgressTracker = this.getEmptyProcessTracker(processes);
     let progressTrackerObject =
@@ -292,6 +322,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         ? currentUser.progressTracker[currentUser.currentDatabase]
         : emptyProgressTracker;
     Object.keys(progressTrackerObject).map((key: string) => {
+      progressTrackerObject[key].totalPassedProcesses = 0;
       this.trackedProcessWithLoader[key] = false;
       if (key === 'communication') {
         this.progressTrackerMessage[key] = 'Establishing connection to server';
@@ -307,10 +338,10 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     return progressTrackerObject;
   }
 
-  getEmptyProcessTracker(processes) {
+  getEmptyProcessTracker(processes: string[]) {
     let progressTracker = {};
     progressTracker['communication'] = {
-      expectedProcesses: this.isOnLogin ? 7 : 6,
+      expectedProcesses: this.isOnLogin ? 5 : 4,
       totalPassedProcesses: 0,
       passedProcesses: [],
       message: ''
@@ -329,20 +360,53 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
             message: ''
           };
         }
-        progressTracker[resourceType].expectedProcesses++;
+        progressTracker[resourceType].expectedProcesses += 2;
       }
     });
     return progressTracker;
   }
 
+  updateProgressTrackerObject(
+    process: string,
+    processMessage?: string,
+    currentResouceType?: string
+  ) {
+    const dataBaseStructure = this.sqlLiteProvider.getDataBaseStructure();
+    processMessage = processMessage ? processMessage : process;
+    currentResouceType =
+      process &&
+      dataBaseStructure &&
+      dataBaseStructure[process] &&
+      dataBaseStructure[process].resourceType
+        ? dataBaseStructure[process].resourceType
+        : currentResouceType;
+    const { currentDatabase } = this.currentUser;
+    let progressTracker = this.currentUser.progressTracker[currentDatabase];
+    if (progressTracker[currentResouceType]) {
+      this.progressTrackerMessage[currentResouceType] = processMessage;
+      this.trackedProcessWithLoader[currentResouceType] = true;
+      progressTracker[currentResouceType].totalPassedProcesses++;
+      if (
+        progressTracker[currentResouceType].passedProcesses.indexOf(process) ===
+        -1
+      ) {
+        progressTracker[currentResouceType].passedProcesses.push(process);
+      }
+    }
+    this.calculateAndSetProgressPercentage(
+      this.trackedResourceTypes,
+      progressTracker
+    );
+  }
+
   calculateAndSetProgressPercentage(
     trackedResourceTypes: string[],
-    processTracker
+    progressTracker
   ) {
     let totalProcesses = 0;
     let totalExpectedProcesses = 0;
     trackedResourceTypes.map((trackedResourceType: string) => {
-      const trackedResource = processTracker[trackedResourceType];
+      const trackedResource = progressTracker[trackedResourceType];
       const { expectedProcesses } = trackedResource;
       const { totalPassedProcesses } = trackedResource;
       totalProcesses += totalPassedProcesses;
@@ -356,6 +420,14 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       totalProcesses,
       totalExpectedProcesses
     );
+    const { currentDatabase } = this.currentUser;
+    this.currentUser.progressTracker[currentDatabase] = progressTracker;
+    this.updateCurrentUser.emit(this.currentUser);
+    if (totalProcesses === totalExpectedProcesses) {
+      this.successOnLoginAndSyncMetadata.emit({
+        currentUser: this.currentUser
+      });
+    }
   }
 
   getPercetage(numerator, denominator) {
@@ -479,9 +551,21 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     }
   }
 
-  startSavingProcess(process: string, data: any) {}
+  startDownloadProcess(process: string) {
+    console.log('Starting ' + process + ' : downloading');
+    setTimeout(() => {
+      this.removeFromQueue(process, 'dowmloading', {});
+      this.updateProgressTrackerObject(process);
+    }, 1000);
+  }
 
-  startDownloadProcess(process: string) {}
+  startSavingProcess(process: string, data: any) {
+    console.log('Starting ' + process + ' : saving');
+    setTimeout(() => {
+      this.removeFromQueue(process, 'saving');
+      this.updateProgressTrackerObject(process);
+    }, 1000);
+  }
 
   clearAllSubscriptions() {
     this.subscriptions.unsubscribe();
