@@ -28,6 +28,7 @@
     "@ionic-native/geolocation": "^4.10.1",
     "@ionic-native/http": "^4.10.1",
     "@ionic-native/network": "^4.10.1",
+    "@ionic-native/sms": "^4.11.0",
     "@ionic-native/splash-screen": "~4.10.0",
     "@ionic-native/sqlite": "^4.10.1",
     "@ionic-native/status-bar": "~4.10.0",
@@ -89,7 +90,8 @@
       "cordova-plugin-datepicker": {},
       "cordova-plugin-geolocation": {
         "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
-      }
+      },
+      "cordova-sms-plugin": {}
     },
     "platforms": [
       "android"

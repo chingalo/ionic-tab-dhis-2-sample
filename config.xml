@@ -101,4 +101,5 @@
     <allow-navigation href="http://192.168.100.8:8100" />
     <allow-navigation href="http://192.168.43.70:8100" />
     <engine name="android" spec="7.0.0" />
+    <plugin name="cordova-sms-plugin" spec="~0.1.11" />
 </widget>

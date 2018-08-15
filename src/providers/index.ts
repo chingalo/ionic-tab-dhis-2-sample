@@ -40,15 +40,21 @@ import { EncryptionProvider } from './encryption/encryption';
 import { HttpClientProvider } from './http-client/http-client';
 import { LocalInstanceProvider } from './local-instance/local-instance';
 import { UserProvider } from './user/user';
-import { OrganisationUnitsProvider } from './organisation-units/organisation-units';
 import { BarcodeReaderProvider } from './barcode-reader/barcode-reader';
-import { DataSetsProvider } from './data-sets/data-sets';
 import { GeolocationProvider } from './geolocation/geolocation';
-import { ProgramsProvider } from './programs/programs';
 import { SettingsProvider } from './settings/settings';
 import { SystemSettingProvider } from '../providers/system-setting/system-setting';
 import { LocalStorageProvider } from '../providers/local-storage/local-storage';
 import { SqlLiteProvider } from '../providers/sql-lite/sql-lite';
+import { OrganisationUnitsProvider } from './organisation-units/organisation-units';
+import { ProgramsProvider } from './programs/programs';
+import { DataSetsProvider } from './data-sets/data-sets';
+import { IndicatorsProvider } from './indicators/indicators';
+import { ProgramRulesProvider } from './program-rules/program-rules';
+import { ProgramStageSectionsProvider } from './program-stage-sections/program-stage-sections';
+import { SectionsProvider } from './sections/sections';
+import { SmsCommandProvider } from './sms-command/sms-command';
+import { StandardReportProvider } from './standard-report/standard-report';
 
 export const appProviders = [
   AppTranslationProvider,
@@ -60,6 +66,12 @@ export const appProviders = [
   UserProvider,
   BarcodeReaderProvider,
   OrganisationUnitsProvider,
+  IndicatorsProvider,
+  ProgramRulesProvider,
+  ProgramStageSectionsProvider,
+  SectionsProvider,
+  SmsCommandProvider,
+  StandardReportProvider,
   DataSetsProvider,
   GeolocationProvider,
   ProgramsProvider,

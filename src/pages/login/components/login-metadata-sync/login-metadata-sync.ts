@@ -41,6 +41,15 @@ import { UserProvider } from '../../../../providers/user/user';
 import { AppProvider } from '../../../../providers/app/app';
 import { SqlLiteProvider } from '../../../../providers/sql-lite/sql-lite';
 import { SystemSettingProvider } from '../../../../providers/system-setting/system-setting';
+import { OrganisationUnitsProvider } from '../../../../providers/organisation-units/organisation-units';
+import { ProgramsProvider } from '../../../../providers/programs/programs';
+import { DataSetsProvider } from '../../../../providers/data-sets/data-sets';
+import { IndicatorsProvider } from '../../../../providers/indicators/indicators';
+import { ProgramRulesProvider } from '../../../../providers/program-rules/program-rules';
+import { ProgramStageSectionsProvider } from '../../../../providers/program-stage-sections/program-stage-sections';
+import { SectionsProvider } from '../../../../providers/sections/sections';
+import { SmsCommandProvider } from '../../../../providers/sms-command/sms-command';
+import { StandardReportProvider } from '../../../../providers/standard-report/standard-report';
 
 /**
  * Generated class for the LoginMetadataSyncComponent component.
@@ -90,7 +99,16 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     private userProvider: UserProvider,
     private appProvider: AppProvider,
     private sqlLiteProvider: SqlLiteProvider,
-    private systemSettingProvider: SystemSettingProvider
+    private systemSettingProvider: SystemSettingProvider,
+    private organisationUnitsProvider: OrganisationUnitsProvider,
+    private programsProvider: ProgramsProvider,
+    private dataSetsProvider: DataSetsProvider,
+    private indicatorsProvider: IndicatorsProvider,
+    private programRulesProvider: ProgramRulesProvider,
+    private programStageSectionsProvider: ProgramStageSectionsProvider,
+    private sectionsProvider: SectionsProvider,
+    private smsCommandProvider: SmsCommandProvider,
+    private standardReportProvider: StandardReportProvider
   ) {
     this.showCancelButton = true;
     this.subscriptions = new Subscription();
@@ -384,7 +402,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   ) {
     const dataBaseStructure = this.sqlLiteProvider.getDataBaseStructure();
     const typeOfProcess =
-      process.split('-').length > 0 ? process.split('-')[1] : 'saving';
+      process.split('-').length > 1 ? process.split('-')[1] : 'saving';
     process = process.split('-')[0];
     processMessage = processMessage ? processMessage : process;
     currentResouceType =
@@ -522,6 +540,8 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   removeFromQueue(process: string, type: string, data?: any) {
+    const progressMessage = this.getProgressMessage(process, type);
+    this.updateProgressTrackerObject(process + '-' + type, progressMessage);
     if (type && type == 'saving') {
       _.remove(
         this.savingingQueueManager.denqueuedProcess,
@@ -544,11 +564,77 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       if (data) {
         this.addIntoQueue(process, 'saving', data);
       } else {
-        this.updateProgressTrackerObject(process + '-saving');
+        const processType = 'saving';
+        const progressMessage = this.getProgressMessage(process, processType);
+        this.updateProgressTrackerObject(
+          process + '-' + processType,
+          progressMessage
+        );
       }
       this.checkingAndStartDownloadProcess();
     }
-    this.updateProgressTrackerObject(process + '-' + type);
+  }
+
+  getProgressMessage(process: string, processType: string) {
+    let progressMessage = processType + ' ' + process;
+    if (processType === 'dowmloading') {
+      if (process == 'organisationUnits') {
+        progressMessage = 'Discovering assigned organisation units';
+      } else if (process == 'dataSets') {
+        progressMessage = 'Discovering entry forms';
+      } else if (process == 'sections') {
+        progressMessage = 'Discovering entry form sections';
+      } else if (process == 'dataElements') {
+        progressMessage = 'Discovering entry form fields';
+      } else if (process == 'smsCommand') {
+        progressMessage = 'Discovering SMS commands';
+      } else if (process == 'programs') {
+        progressMessage = 'Discovering programs';
+      } else if (process == 'programStageSections') {
+        progressMessage = 'Discovering program stage section';
+      } else if (process == 'programRules') {
+        progressMessage = 'Discovering program rules';
+      } else if (process == 'programRuleActions') {
+        progressMessage = 'Discovering program rules actions';
+      } else if (process == 'programRuleVariables') {
+        progressMessage = 'Discovering program rules variables';
+      } else if (process == 'indicators') {
+        progressMessage = 'Discovering indicators';
+      } else if (process == 'reports') {
+        progressMessage = 'Discovering standard reports';
+      } else if (process == 'constants') {
+        progressMessage = 'Discovering constants';
+      }
+    } else if (processType === 'saving') {
+      if (process == 'organisationUnits') {
+        progressMessage = 'Assigned organisation units have been discovered';
+      } else if (process == 'dataSets') {
+        progressMessage = 'Entry forms have been discovered';
+      } else if (process == 'sections') {
+        progressMessage = 'Entry form sections have been discovered';
+      } else if (process == 'dataElements') {
+        progressMessage = 'Entry form fields have been discovered';
+      } else if (process == 'smsCommand') {
+        progressMessage = 'SMS commands have been discovered';
+      } else if (process == 'programs') {
+        progressMessage = 'Programs have been discovered';
+      } else if (process == 'programStageSections') {
+        progressMessage = 'Program stage section have been discovered';
+      } else if (process == 'programRules') {
+        progressMessage = 'Program Rules have been discovered';
+      } else if (process == 'programRuleActions') {
+        progressMessage = 'Program rules actions have been discovered';
+      } else if (process == 'programRuleVariables') {
+        progressMessage = 'Program rules variables have been discovered';
+      } else if (process == 'indicators') {
+        progressMessage = 'Indicators have been discovered';
+      } else if (process == 'reports') {
+        progressMessage = 'Reports have been discovered';
+      } else if (process == 'constants') {
+        progressMessage = 'Constants have been discovered';
+      }
+    }
+    return progressMessage;
   }
 
   checkingAndStartSavingProcess() {
@@ -598,9 +684,21 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startDownloadProcess(process: string) {
-    //completedTrackedProcess
     if (this.completedTrackedProcess.indexOf(process) === -1) {
-      console.log('Starting ' + process + ' : downloading');
+      if (process == 'organisationUnits') {
+      } else if (process == 'dataSets') {
+      } else if (process == 'sections') {
+      } else if (process == 'dataElements') {
+      } else if (process == 'smsCommand') {
+      } else if (process == 'programs') {
+      } else if (process == 'programStageSections') {
+      } else if (process == 'programRules') {
+      } else if (process == 'programRuleActions') {
+      } else if (process == 'programRuleVariables') {
+      } else if (process == 'indicators') {
+      } else if (process == 'reports') {
+      } else if (process == 'constants') {
+      }
       setTimeout(() => {
         this.removeFromQueue(process, 'dowmloading', {});
       }, 1000);
@@ -610,7 +708,20 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startSavingProcess(process: string, data: any) {
-    console.log('Starting ' + process + ' : saving');
+    if (process == 'organisationUnits') {
+    } else if (process == 'dataSets') {
+    } else if (process == 'sections') {
+    } else if (process == 'dataElements') {
+    } else if (process == 'smsCommand') {
+    } else if (process == 'programs') {
+    } else if (process == 'programStageSections') {
+    } else if (process == 'programRules') {
+    } else if (process == 'programRuleActions') {
+    } else if (process == 'programRuleVariables') {
+    } else if (process == 'indicators') {
+    } else if (process == 'reports') {
+    } else if (process == 'constants') {
+    }
     setTimeout(() => {
       this.removeFromQueue(process, 'saving');
     }, 1000);
