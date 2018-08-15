@@ -83,6 +83,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   progressTrackerPacentage: any;
   progressTrackerMessage: any;
   trackedProcessWithLoader: any;
+  completedTrackedProcess: string[];
 
   constructor(
     private networkAvailabilityProvider: NetworkAvailabilityProvider,
@@ -96,6 +97,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     this.progressTrackerPacentage = {};
     this.progressTrackerMessage = {};
     this.trackedProcessWithLoader = {};
+    this.completedTrackedProcess = [];
   }
 
   ngOnInit() {
@@ -223,6 +225,15 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                                             .setUserData(data)
                                             .subscribe(
                                               () => {
+                                                const {
+                                                  currentDatabase
+                                                } = this.currentUser;
+                                                this.completedTrackedProcess = this.getCompletedTrackedProcess(
+                                                  this.currentUser
+                                                    .progressTracker[
+                                                    currentDatabase
+                                                  ]
+                                                );
                                                 if (this.isOnLogin) {
                                                   // preparing local storage
                                                   this.updateProgressTrackerObject(
@@ -372,6 +383,9 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     currentResouceType?: string
   ) {
     const dataBaseStructure = this.sqlLiteProvider.getDataBaseStructure();
+    const typeOfProcess =
+      process.split('-').length > 0 ? process.split('-')[1] : 'saving';
+    process = process.split('-')[0];
     processMessage = processMessage ? processMessage : process;
     currentResouceType =
       process &&
@@ -387,10 +401,13 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       this.trackedProcessWithLoader[currentResouceType] = true;
       progressTracker[currentResouceType].totalPassedProcesses++;
       if (
-        progressTracker[currentResouceType].passedProcesses.indexOf(process) ===
-        -1
+        progressTracker[currentResouceType].passedProcesses.indexOf(
+          process + '-' + typeOfProcess
+        ) === -1
       ) {
-        progressTracker[currentResouceType].passedProcesses.push(process);
+        progressTracker[currentResouceType].passedProcesses.push(
+          process + '-' + typeOfProcess
+        );
       }
     }
     this.calculateAndSetProgressPercentage(
@@ -430,6 +447,26 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         currentUser: this.currentUser
       });
     }
+  }
+
+  getCompletedTrackedProcess(progressTracker) {
+    let completedTrackedProcess = [];
+    Object.keys(progressTracker).map((resourceType: string) => {
+      progressTracker[resourceType].passedProcesses.map(
+        (passedProcess: any) => {
+          if (passedProcess.indexOf('-saving') > -1) {
+            passedProcess = passedProcess.split('-')[0];
+            if (passedProcess) {
+              completedTrackedProcess = _.concat(
+                completedTrackedProcess,
+                passedProcess
+              );
+            }
+          }
+        }
+      );
+    });
+    return completedTrackedProcess;
   }
 
   getPercetage(numerator, denominator) {
@@ -492,6 +529,10 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
           return process == denqueuedProcess;
         }
       );
+      const { currentDatabase } = this.currentUser;
+      this.completedTrackedProcess = this.getCompletedTrackedProcess(
+        this.currentUser.progressTracker[currentDatabase]
+      );
       this.checkingAndStartSavingProcess();
     } else if (type && type == 'dowmloading') {
       _.remove(
@@ -505,6 +546,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       }
       this.checkingAndStartDownloadProcess();
     }
+    this.updateProgressTrackerObject(process + '-' + type);
   }
 
   checkingAndStartSavingProcess() {
@@ -555,17 +597,17 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
 
   startDownloadProcess(process: string) {
     console.log('Starting ' + process + ' : downloading');
-    setTimeout(() => {
-      this.removeFromQueue(process, 'dowmloading', {});
-      this.updateProgressTrackerObject(process);
-    }, 1000);
+    //completedTrackedProcess
+    if (this.completedTrackedProcess.indexOf(process))
+      setTimeout(() => {
+        this.removeFromQueue(process, 'dowmloading', {});
+      }, 1000);
   }
 
   startSavingProcess(process: string, data: any) {
     console.log('Starting ' + process + ' : saving');
     setTimeout(() => {
       this.removeFromQueue(process, 'saving');
-      this.updateProgressTrackerObject(process);
     }, 1000);
   }
 
@@ -586,5 +628,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     this.progressTrackerPacentage = null;
     this.progressTrackerMessage = null;
     this.trackedProcessWithLoader = null;
+    this.completedTrackedProcess = null;
   }
 }

@@ -177,8 +177,6 @@ export class LoginPage implements OnInit, OnDestroy {
 
   onUpdateCurrentUser(currentUser) {
     this.currentUser = _.assign({}, this.currentUser, currentUser);
-    const { progressTracker } = currentUser;
-    console.log(JSON.stringify(progressTracker));
   }
 
   onCancelLoginProcess() {
