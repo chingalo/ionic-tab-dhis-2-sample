@@ -4,7 +4,7 @@ import { SqlLiteProvider } from '../sql-lite/sql-lite';
 import { HttpClientProvider } from '../http-client/http-client';
 import { DataSetsProvider } from '../data-sets/data-sets';
 import { DataSet } from '../../models/dataSet';
-import { SmsCode, SmsCommand } from '../../models/smsCommand';
+import { SmsCommand } from '../../models/smsCommand';
 import { SMS } from '@ionic-native/sms';
 import { Observable } from 'rxjs/Observable';
 
