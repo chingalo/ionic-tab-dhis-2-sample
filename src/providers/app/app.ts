@@ -46,6 +46,7 @@ export class AppProvider {
    * @param {string} message
    */
   setTopNotification(message: string) {
+    message = this.getSanitizedMessage(message);
     this.transalationProvider
       .getTransalations([message])
       .subscribe((data: any) => {
@@ -65,6 +66,7 @@ export class AppProvider {
    * @param {number} time
    */
   setNormalNotification(message: string, time: number = 6000) {
+    message = this.getSanitizedMessage(message);
     this.transalationProvider
       .getTransalations([message])
       .subscribe((data: any) => {
@@ -76,6 +78,18 @@ export class AppProvider {
           })
           .present();
       });
+  }
+
+  getSanitizedMessage(message) {
+    try {
+      const matchRegx = /<body[^>]*>([\w|\W]*)<\/body/im;
+      message = message
+        .match(matchRegx)[0]
+        .replace(/(<([^>]+)>)/gi, ':separator:')
+        .split(':separator:')
+        .filter(content => content.length > 0)[0];
+    } catch (e) {}
+    return message;
   }
 
   /**

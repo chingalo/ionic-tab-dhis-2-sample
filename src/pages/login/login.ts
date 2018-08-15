@@ -54,6 +54,7 @@ export class LoginPage implements OnInit, OnDestroy {
   isLoginFormValid: boolean;
   isLoginProcessActive: boolean;
   isOnLogin: boolean;
+  showOverallProgressBar: boolean;
   overAllLoginMessage: string;
   offlineIcon: string;
   currentUser: CurrentUser;
@@ -79,6 +80,7 @@ export class LoginPage implements OnInit, OnDestroy {
     this.isLoginFormValid = false;
     this.isLoginProcessActive = false;
     this.isOnLogin = true;
+    this.showOverallProgressBar = true;
     this.topThreeTranslationCodes = this.appTranslationProvider.getTopThreeSupportedTranslationCodes();
     this.processes = [
       'organisationUnits',
@@ -198,21 +200,16 @@ export class LoginPage implements OnInit, OnDestroy {
     const { keyApplicationNotification } = data;
     const { keyApplicationIntro } = data;
     const { serverUrl } = this.currentUser;
-    if (keyFlag) {
-      this.keyFlag = keyFlag;
-    }
-    if (keyApplicationFooter) {
-      this.keyApplicationFooter = keyApplicationFooter;
-    }
-    if (applicationTitle) {
-      this.applicationTitle = applicationTitle;
-    }
-    if (keyApplicationNotification) {
-      this.keyApplicationNotification = keyApplicationNotification;
-    }
-    if (keyApplicationIntro) {
-      this.keyApplicationIntro = keyApplicationIntro;
-    }
+
+    this.keyFlag = keyFlag ? keyFlag : null;
+    this.keyApplicationFooter = keyApplicationFooter
+      ? keyApplicationFooter
+      : null;
+    this.applicationTitle = applicationTitle ? applicationTitle : null;
+    this.keyApplicationNotification = keyApplicationNotification
+      ? keyApplicationNotification
+      : null;
+    this.keyApplicationIntro = keyApplicationIntro ? keyApplicationIntro : null;
     if (!skipSaving) {
       this.systemSettings
         .saveSystemSettings(data, serverUrl)
@@ -246,6 +243,8 @@ export class LoginPage implements OnInit, OnDestroy {
     this.topThreeTranslationCodes = null;
     this.localInstances = null;
     this.processes = null;
+    this.showOverallProgressBar = null;
+    this.isOnLogin = null;
     this.resetLoginSpinnerValues();
   }
 }

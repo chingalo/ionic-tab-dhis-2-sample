@@ -24,13 +24,13 @@
 -->
 <ion-content class="login">
   <div *ngIf="isLoginProcessActive" class="topSLogan logo" style="margin-bottom: 100px;" padding-bottom margin-bottom>
-    <login-spinner [keyFlag]="keyFlag" [serverUrl]="currentUser.serverUrl" [applicationTitle]="applicationTitle" [keyApplicationFooter]="keyApplicationFooter" [keyApplicationIntro]="keyApplicationIntro"
-      [keyApplicationNotification]="keyApplicationNotification"></login-spinner>
+    <login-spinner [keyFlag]="keyFlag" [serverUrl]="currentUser.serverUrl" [applicationTitle]="applicationTitle" [keyApplicationFooter]="keyApplicationFooter"
+      [keyApplicationIntro]="keyApplicationIntro" [keyApplicationNotification]="keyApplicationNotification"></login-spinner>
   </div>
   <div margin padding-top *ngIf="isLoginProcessActive">
     <login-metadata-sync (systemSettingLoaded)="onSystemSettingLoaded($event)" (updateCurrentUser)="onUpdateCurrentUser($event)"
       (failOnLogin)="onFailLogin($event)" (successOnLogin)="onSuccessLogin($event)" [currentUser]="currentUser" (cancelProgress)="onCancelLoginProcess()"
-      [overAllMessage]="overAllLoginMessage" [isOnLogin]="isOnLogin" [processes]="processes"></login-metadata-sync>
+      [overAllMessage]="overAllLoginMessage" [showOverallProgressBar]="showOverallProgressBar" [isOnLogin]="isOnLogin" [processes]="processes"></login-metadata-sync>
   </div>
   <ion-grid class="animated fadeIn">
     <ion-row *ngIf="!isLoginProcessActive">

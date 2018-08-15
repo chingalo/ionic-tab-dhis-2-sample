@@ -61,6 +61,8 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   isOnLogin: boolean;
   @Input()
   overAllMessage: string;
+  @Input()
+  showOverallProgressBar: boolean;
 
   @Output()
   cancelProgress = new EventEmitter();
@@ -82,9 +84,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   progressTrackerMessage: any;
   trackedProcessWithLoader: any;
 
-  processMessage: string;
-  progressPercentage: any;
-
   constructor(
     private networkAvailabilityProvider: NetworkAvailabilityProvider,
     private userProvider: UserProvider,
@@ -97,20 +96,17 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     this.progressTrackerPacentage = {};
     this.progressTrackerMessage = {};
     this.trackedProcessWithLoader = {};
-    this.progressPercentage = '100';
   }
 
   ngOnInit() {
     if (this.processes) {
-      this.processMessage = 'Loading';
       this.resetQueueManager();
     }
-    // having clear attribute to deferentiate login and sync module
-    if (this.isOnLogin) {
-      const currentUser = _.assign({}, this.currentUser);
-      this.authenticateUser(currentUser, this.processes);
+    if (this.currentUser) {
+      this.authenticateUser(this.currentUser, this.processes);
     } else {
-      this.syncMetadata(this.processes);
+      const error = 'Missing current user data';
+      this.onFailToLogin({ error });
     }
   }
 
@@ -120,7 +116,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     );
     const networkStatus = this.networkAvailabilityProvider.getNetWorkStatus();
     const { isAvailable } = networkStatus;
-    if (!isAvailable) {
+    if (!isAvailable && this.isOnLogin) {
       const subscription = this.userProvider
         .offlineUserAuthentication(currentUser)
         .subscribe(
@@ -132,8 +128,8 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
           }
         );
       this.subscriptions.add(subscription);
-    } else {
-      // Reset database name for reauthebticate variables
+    } else if (isAvailable) {
+      const currentResouceType = 'communication';
       let processTracker = this.getProgressTracker(currentUser, processes);
       this.trackedResourceTypes = Object.keys(processTracker);
       this.calculateAndSetProgressPercentage(
@@ -180,11 +176,72 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                                 .getUserAuthorities(this.currentUser)
                                 .subscribe(
                                   response => {
-                                    console.log(
-                                      'response : ' + JSON.stringify(response)
-                                    );
+                                    this.currentUser.id = response.id;
+                                    this.currentUser.name = response.name;
+                                    this.currentUser.authorities =
+                                      response.authorities;
+                                    this.currentUser.dataViewOrganisationUnits =
+                                      response.dataViewOrganisationUnits;
                                     //loading user data
-                                    //prepare local storage
+                                    const subscription = this.userProvider
+                                      .getUserDataOnAuthenticatedServer(
+                                        currentUser,
+                                        serverUrl
+                                      )
+                                      .subscribe(
+                                        response => {
+                                          const { data } = response;
+                                          this.currentUser.userOrgUnitIds = _.map(
+                                            data.organisationUnits,
+                                            (organisationUnit: any) => {
+                                              return organisationUnit.id;
+                                            }
+                                          );
+                                          const subscription = this.userProvider
+                                            .setUserData(data)
+                                            .subscribe(
+                                              () => {
+                                                if (this.isOnLogin) {
+                                                  // preparing local storage
+                                                  const {
+                                                    currentDatabase
+                                                  } = this.currentUser;
+                                                  const subscription = this.sqlLiteProvider
+                                                    .generateTables(
+                                                      currentDatabase
+                                                    )
+                                                    .subscribe(
+                                                      () => {
+                                                        this.startSyncMetadataProcesses(
+                                                          processes
+                                                        );
+                                                      },
+                                                      error => {
+                                                        this.onFailToLogin(
+                                                          error
+                                                        );
+                                                      }
+                                                    );
+                                                  this.subscriptions.add(
+                                                    subscription
+                                                  );
+                                                } else {
+                                                  this.startSyncMetadataProcesses(
+                                                    processes
+                                                  );
+                                                }
+                                              },
+                                              error => {
+                                                this.onFailToLogin(error);
+                                              }
+                                            );
+                                          this.subscriptions.add(subscription);
+                                        },
+                                        error => {
+                                          this.onFailToLogin(error);
+                                        }
+                                      );
+                                    this.subscriptions.add(subscription);
                                   },
                                   error => {
                                     this.onFailToLogin(error);
@@ -215,10 +272,15 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
           }
         );
       this.subscriptions.add(subscription);
+    } else {
+      const error = networkStatus.message;
+      this.onFailToLogin({ error });
     }
   }
 
-  syncMetadata(processes: string[]) {}
+  startSyncMetadataProcesses(processes: string[]) {
+    console.log(processes);
+  }
 
   getProgressTracker(currentUser: CurrentUser, processes: string[]) {
     const emptyProgressTracker = this.getEmptyProcessTracker(processes);
@@ -248,7 +310,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   getEmptyProcessTracker(processes) {
     let progressTracker = {};
     progressTracker['communication'] = {
-      expectedProcesses: this.isOnLogin ? 3 : 2,
+      expectedProcesses: this.isOnLogin ? 7 : 6,
       totalPassedProcesses: 0,
       passedProcesses: [],
       message: ''
@@ -438,6 +500,5 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     this.progressTrackerPacentage = null;
     this.progressTrackerMessage = null;
     this.trackedProcessWithLoader = null;
-    this.progressPercentage = null;
   }
 }

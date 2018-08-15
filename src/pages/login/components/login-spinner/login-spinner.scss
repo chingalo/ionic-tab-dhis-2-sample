@@ -7,6 +7,9 @@ login-spinner {
     overflow: hidden;
     text-overflow: ellipsis;
     font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   @-webkit-keyframes spincube {
     from,

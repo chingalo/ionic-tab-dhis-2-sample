@@ -101,7 +101,11 @@ export class UserProvider {
             ).subscribe(
               responseData => {
                 const { data } = responseData;
-                observer.next({ serverUrl, currentUser, data });
+                observer.next({
+                  serverUrl,
+                  currentUser,
+                  data: JSON.parse(data)
+                });
                 observer.complete();
               },
               error => {
@@ -109,7 +113,7 @@ export class UserProvider {
               }
             );
           } else {
-            observer.next({ serverUrl, currentUser, data });
+            observer.next({ serverUrl, currentUser, data: JSON.parse(data) });
             observer.complete();
           }
         })
