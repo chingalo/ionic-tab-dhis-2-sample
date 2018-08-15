@@ -543,6 +543,8 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       );
       if (data) {
         this.addIntoQueue(process, 'saving', data);
+      } else {
+        this.updateProgressTrackerObject(process + '-saving');
       }
       this.checkingAndStartDownloadProcess();
     }
@@ -596,12 +598,15 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startDownloadProcess(process: string) {
-    console.log('Starting ' + process + ' : downloading');
     //completedTrackedProcess
-    if (this.completedTrackedProcess.indexOf(process))
+    if (this.completedTrackedProcess.indexOf(process) === -1) {
+      console.log('Starting ' + process + ' : downloading');
       setTimeout(() => {
         this.removeFromQueue(process, 'dowmloading', {});
       }, 1000);
+    } else {
+      this.removeFromQueue(process, 'dowmloading');
+    }
   }
 
   startSavingProcess(process: string, data: any) {
