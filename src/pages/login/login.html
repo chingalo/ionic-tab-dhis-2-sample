@@ -31,7 +31,7 @@
     <login-metadata-sync (systemSettingLoaded)="onSystemSettingLoaded($event)" (updateCurrentUser)="onUpdateCurrentUser($event)"
       (failOnLogin)="onFailLogin($event)" (successOnLoginAndSyncMetadata)="onSuccessLogin($event)" [currentUser]="currentUser"
       (cancelProgress)="onCancelLoginProcess()" [overAllMessage]="overAllLoginMessage" [showOverallProgressBar]="showOverallProgressBar"
-      [isOnLogin]="isOnLogin" [processes]="processes"></login-metadata-sync>
+      [isOnLogin]="isOnLogin"></login-metadata-sync>
   </div>
   <ion-grid class="animated fadeIn">
     <ion-row *ngIf="!isLoginProcessActive">

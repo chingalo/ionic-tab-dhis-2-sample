@@ -99,6 +99,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    this.processes = this.processes ? this.processes : [];
     if (this.processes) {
       this.resetQueueManager();
     }
@@ -136,7 +137,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         this.trackedResourceTypes,
         processTracker
       );
-
       const subscription = this.userProvider
         .onlineUserAuthentication(currentUser, currentUser.serverUrl)
         .subscribe(
@@ -421,8 +421,10 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       totalExpectedProcesses
     );
     const { currentDatabase } = this.currentUser;
-    this.currentUser.progressTracker[currentDatabase] = progressTracker;
-    this.updateCurrentUser.emit(this.currentUser);
+    if (currentDatabase) {
+      this.currentUser.progressTracker[currentDatabase] = progressTracker;
+      this.updateCurrentUser.emit(this.currentUser);
+    }
     if (totalProcesses === totalExpectedProcesses) {
       this.successOnLoginAndSyncMetadata.emit({
         currentUser: this.currentUser
