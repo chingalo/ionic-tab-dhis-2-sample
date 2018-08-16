@@ -28,7 +28,7 @@ export class SectionsProvider {
    */
   downloadSectionsFromServer(currentUser): Observable<any> {
     let url =
-      '/api/25/' +
+      '/api/' +
       this.resource +
       '.json?paging=false&fields=id,name,sortOrder,indicators[id],dataElements[id]';
     return new Observable(observer => {

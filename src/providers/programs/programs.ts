@@ -68,7 +68,7 @@ export class ProgramsProvider {
       'filter=organisationUnits.path:ilike:' +
       userOrgUnitIds.join('&filter=path:ilike:') +
       '&rootJunction=OR';
-    let url = '/api/25/' + this.resource + '.json?paging=false&' + fields;
+    let url = '/api/' + this.resource + '.json?paging=false&' + fields;
     +'&' + filter;
     return new Observable(observer => {
       this.HttpClient.get(url, true, currentUser).subscribe(

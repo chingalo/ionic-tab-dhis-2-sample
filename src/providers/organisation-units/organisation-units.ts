@@ -93,8 +93,7 @@ export class OrganisationUnitsProvider {
           'filter=path:ilike:' +
           userOrgUnitIds.join('&filter=path:ilike:') +
           '&rootJunction=OR';
-        const url =
-          '/api/25/' + this.resource + '.json?' + fields + '&' + filter;
+        const url = '/api/' + this.resource + '.json?' + fields + '&' + filter;
         this.HttpClient.get(
           url,
           false,

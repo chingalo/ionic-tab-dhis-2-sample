@@ -64,9 +64,9 @@ export class HttpClientProvider {
       let pattern = '/api/' + user.dhisVersion;
       url = url.replace(pattern, '/api/');
     } else if (user.dhisVersion && parseInt(user.dhisVersion) >= 25) {
-      //removing hardcorded /api/25 on all apps urls
+      //removing hardcorded /api on all apps urls
       let pattern = '/api/' + user.dhisVersion;
-      url = url.replace('/api/25', '/api');
+      url = url.replace('/api', '/api');
       url = url.replace('/api', pattern);
     }
     return url;

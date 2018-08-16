@@ -38,7 +38,7 @@ export class OrganisationUnitSelectionPage implements OnInit {
   lastSelectedOrgUnit: OrganisationUnitModel;
   organisationUnits: OrganisationUnitModel[];
   hasOrgUnitChildrenOpened: any = {};
-  ouIdsWithAssigments: Array<string>;
+  ouIdsWithAssigments: string[];
 
   constructor(
     private viewCtrl: ViewController,

@@ -23,7 +23,7 @@
 export interface QueueManager {
   dequeuingLimit: number;
   totalProcess?: number;
-  enqueuedProcess: Array<string>;
-  denqueuedProcess: Array<string>;
+  enqueuedProcess: string[];
+  denqueuedProcess: string[];
   data?: any;
 }

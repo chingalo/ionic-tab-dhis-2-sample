@@ -37,11 +37,14 @@ import { OrganisationUnitsProvider } from '../../providers/organisation-units/or
   templateUrl: 'multi-organisation-unit.html'
 })
 export class MultiOrganisationUnitComponent implements OnInit {
-  @Input() selectedOrgUnits;
-  @Output() activateOrganisationUnit = new EventEmitter();
-  @Output() deactivateOrganisationUnit = new EventEmitter();
+  @Input()
+  selectedOrgUnits;
+  @Output()
+  activateOrganisationUnit = new EventEmitter();
+  @Output()
+  deactivateOrganisationUnit = new EventEmitter();
   hasOrgUnitChildrenOpened: any;
-  toggledOuIds: Array<string>;
+  toggledOuIds: string[];
   isLoading: boolean;
   loadingMessage: string;
   emptyMessage: string;

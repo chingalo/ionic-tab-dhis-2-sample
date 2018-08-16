@@ -29,7 +29,7 @@ export class OrganisationUnitSearchPage implements OnInit {
   isLoading: boolean;
   currentPage: number;
   currentSelectedOrgUnitName: string;
-  ouIdsWithAssigments: Array<string>;
+  ouIdsWithAssigments: string[];
   organisationUnits: any;
   filterType: string;
 

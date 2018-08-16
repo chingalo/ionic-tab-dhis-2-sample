@@ -31,7 +31,7 @@ export class IndicatorsProvider {
     return new Observable(observer => {
       let fields =
         'fields=id,name,denominatorDescription,numeratorDescription,numerator,denominator,indicatorType[:all]';
-      let url = '/api/25/' + this.resource + '.json?paging=false&';
+      let url = '/api/' + this.resource + '.json?paging=false&';
       url += fields;
       this.HttpClient.get(url, true, currentUser).subscribe(
         (response: any) => {

@@ -45,7 +45,7 @@ export class DataSetsProvider {
    * @param currentUser
    * @returns {Observable<any>}
    */
-  getAllDataSetsSMSCodeGeneration(currentUser): Observable<any> {
+  getAllDataSetsSMSCodeGeneration(currentUser: CurrentUser): Observable<any> {
     let url =
       '/api/dataSets.json?fields=id,dataSetElements[dataElement[id,categoryCombo[categoryOptionCombos[id]]]],dataElements[id,categoryCombo[categoryOptionCombos[id]]]';
     return new Observable(observer => {
@@ -65,7 +65,7 @@ export class DataSetsProvider {
    *
    * @param currentUser
    */
-  getAllDataSets(currentUser): Observable<any> {
+  getAllDataSets(currentUser: CurrentUser): Observable<any> {
     return new Observable(observer => {
       this.SqlLite.getAllDataFromTable(
         this.resource,
@@ -79,7 +79,7 @@ export class DataSetsProvider {
                 let dataElemets = dataSetElementMapper[dataSet.id]
                   ? dataSetElementMapper[dataSet.id]
                   : [];
-                dataSets.push({
+                dataSets = _.concat(dataSet, {
                   id: dataSet.id,
                   name: dataSet.name,
                   dataElements: dataElemets
@@ -104,7 +104,7 @@ export class DataSetsProvider {
    *
    * @param currentUser
    */
-  getAllDataSetElementsMapper(currentUser): Observable<any> {
+  getAllDataSetElementsMapper(currentUser: CurrentUser): Observable<any> {
     return new Observable(observer => {
       this.SqlLite.getAllDataFromTable(
         'dataSetElements',
@@ -435,7 +435,10 @@ export class DataSetsProvider {
    * @param currentUser
    * @returns {Observable<any>}
    */
-  downloadDataSetsFromServer(currentUser): Observable<any> {
+  downloadDataSetsFromServer(
+    currentUser: CurrentUser,
+    dataSetIds?: string[]
+  ): Observable<any> {
     let dataSets = [];
     const { userOrgUnitIds } = currentUser;
     return new Observable(observer => {
@@ -449,8 +452,7 @@ export class DataSetsProvider {
           'filter=organisationUnits.path:ilike:' +
           userOrgUnitIds.join('&filter=path:ilike:') +
           '&rootJunction=OR';
-        const url =
-          '/api/25/' + this.resource + '.json?' + fields + '&' + filter;
+        const url = '/api/' + this.resource + '.json?' + fields + '&' + filter;
         this.HttpClient.get(
           url,
           false,
@@ -461,6 +463,7 @@ export class DataSetsProvider {
           (response: any) => {
             try {
               dataSets = response[this.resource];
+              console.log(dataSetIds);
               observer.next(dataSets);
               observer.complete();
             } catch (e) {

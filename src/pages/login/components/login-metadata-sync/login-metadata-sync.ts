@@ -227,8 +227,9 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                                     );
                                     const subscription = this.userProvider
                                       .getUserDataOnAuthenticatedServer(
-                                        currentUser,
-                                        serverUrl
+                                        this.currentUser,
+                                        serverUrl,
+                                        true
                                       )
                                       .subscribe(
                                         response => {
@@ -242,7 +243,11 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                                           const subscription = this.userProvider
                                             .setUserData(data)
                                             .subscribe(
-                                              () => {
+                                              userData => {
+                                                const { dataSets } = userData;
+                                                const { programs } = userData;
+                                                this.currentUser.dataSets = dataSets;
+                                                this.currentUser.programs = programs;
                                                 const {
                                                   currentDatabase
                                                 } = this.currentUser;

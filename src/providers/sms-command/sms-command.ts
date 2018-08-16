@@ -34,7 +34,7 @@ export class SmsCommandProvider {
    */
   getSmsCommandFromServer(user): Observable<any> {
     return new Observable(observer => {
-      let smsCommandUrl = '/api/25/dataStore/sms/commands';
+      let smsCommandUrl = '/api/dataStore/sms/commands';
       this.HttpClient.get(smsCommandUrl, false, user).subscribe(
         (response: any) => {
           response = JSON.parse(response.data);
@@ -100,7 +100,7 @@ export class SmsCommandProvider {
               smsCommands,
               currentUser.currentDatabase
             ).subscribe(() => {});
-            let smsCommandUrl = '/api/25/dataStore/sms/commands';
+            let smsCommandUrl = '/api/dataStore/sms/commands';
             this.HttpClient.defaultPost(
               smsCommandUrl,
               smsCommands,

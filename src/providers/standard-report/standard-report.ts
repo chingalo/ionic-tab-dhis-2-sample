@@ -27,7 +27,7 @@ export class StandardReportProvider {
   downloadReportsFromServer(currentUser): Observable<any> {
     let fields = "id,name,created,type,relativePeriods,reportParams,designContent";
     let filter = "type:eq:HTML&filter=designContent:ilike:cordova";
-    let url = "/api/25/" + this.resource + ".json?paging=false&fields=" + fields;
+    let url = "/api/" + this.resource + ".json?paging=false&fields=" + fields;
     url += "&filter=" + filter;
     return new Observable(observer => {
       this.HttpClient.get(url, true, currentUser).subscribe((response: any) => {
@@ -47,7 +47,7 @@ export class StandardReportProvider {
   downloadConstantsFromServer(currentUser): Observable<any> {
     let fields = "id,name,value";
     let resource = "constants";
-    let url = "/api/25/" + resource + ".json?paging=false&fields=" + fields;
+    let url = "/api/" + resource + ".json?paging=false&fields=" + fields;
     return new Observable(observer => {
       this.HttpClient.get(url, true, currentUser).subscribe((response: any) => {
         observer.next(response.constants);

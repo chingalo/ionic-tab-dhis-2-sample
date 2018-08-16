@@ -35,7 +35,9 @@ export interface CurrentUser {
   hashedKeyForOfflineAuthentication?: string;
   currentDatabase?: string;
   dhisVersion?: string;
-  authorities?: Array<string>;
+  authorities?: string[];
   progressTracker?: any;
-  userOrgUnitIds?: Array<string>;
+  userOrgUnitIds?: string[];
+  programs?: string[];
+  dataSets?: string[];
 }
