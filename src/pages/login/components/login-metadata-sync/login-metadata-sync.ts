@@ -133,10 +133,24 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     }
   }
 
+  resetCUrrentUserOptionalvalues() {
+    delete this.currentUser.authorities;
+    delete this.currentUser.dhisVersion;
+    delete this.currentUser.id;
+    delete this.currentUser.userOrgUnitIds;
+    delete this.currentUser.dataSets;
+    delete this.currentUser.programs;
+    delete this.currentUser.dataViewOrganisationUnits;
+    delete this.currentUser.name;
+    delete this.currentUser.authorizationKey;
+    delete this.currentUser.currentDatabase;
+  }
+
   authenticateUser(currentUser: CurrentUser, processes: string[]) {
     currentUser.serverUrl = this.appProvider.getFormattedBaseUrl(
       currentUser.serverUrl
     );
+
     const networkStatus = this.networkAvailabilityProvider.getNetWorkStatus();
     const { isAvailable } = networkStatus;
     if (!isAvailable && this.isOnLogin) {
@@ -823,8 +837,44 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
             )
         );
       } else if (process === 'indicators') {
+        this.subscriptions.add(
+          this.indicatorsProvider
+            .downloadingIndicatorsFromServer(this.currentUser)
+            .subscribe(
+              response => {
+                this.removeFromQueue(process, 'dowmloading', response);
+              },
+              error => {
+                this.onFailToLogin(error);
+              }
+            )
+        );
       } else if (process === 'reports') {
+        this.subscriptions.add(
+          this.standardReportProvider
+            .downloadReportsFromServer(this.currentUser)
+            .subscribe(
+              response => {
+                this.removeFromQueue(process, 'dowmloading', response);
+              },
+              error => {
+                this.onFailToLogin(error);
+              }
+            )
+        );
       } else if (process === 'constants') {
+        this.subscriptions.add(
+          this.standardReportProvider
+            .downloadConstantsFromServer(this.currentUser)
+            .subscribe(
+              response => {
+                this.removeFromQueue(process, 'dowmloading', response);
+              },
+              error => {
+                this.onFailToLogin(error);
+              }
+            )
+        );
       }
     } else {
       this.removeFromQueue(process, 'dowmloading');
@@ -863,7 +913,12 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
 
   ngOnDestroy() {
     this.clearAllSubscriptions();
+    this.currentUser = null;
+    this.processes = null;
+    this.isOnLogin = null;
+    this.overAllMessage = null;
     this.savingingQueueManager = null;
+    this.showOverallProgressBar = null;
     this.downloadingQueueManager = null;
     this.showCancelButton = null;
     this.progressTrackerPacentage = null;
