@@ -34,7 +34,8 @@ export class ProgramStageSectionsProvider {
     return new Observable(observer => {
       this.HttpClient.get(url, true, currentUser).subscribe(
         (response: any) => {
-          observer.next(response);
+          const { programStageSections } = response;
+          observer.next(programStageSections);
         },
         error => {
           observer.error(error);

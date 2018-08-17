@@ -70,6 +70,7 @@ export class ProgramRulesProvider {
                   location,
                   data
                 } = action;
+                console.log(location);
                 let evalCondition = condition;
                 let evalDataCondition = data ? data : '';
                 let evalData = '';

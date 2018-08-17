@@ -56,6 +56,7 @@ import { ProgramStageSectionsProvider } from './program-stage-sections/program-s
 import { SectionsProvider } from './sections/sections';
 import { SmsCommandProvider } from './sms-command/sms-command';
 import { StandardReportProvider } from './standard-report/standard-report';
+import { DataElementsProvider } from './data-elements/data-elements';
 
 export const appProviders = [
   AppTranslationProvider,
@@ -79,7 +80,8 @@ export const appProviders = [
   SettingsProvider,
   SystemSettingProvider,
   LocalStorageProvider,
-  SqlLiteProvider
+  SqlLiteProvider,
+  DataElementsProvider
 ];
 
 export const nativePlugins = [

@@ -34,7 +34,8 @@ export class SectionsProvider {
     return new Observable(observer => {
       this.HttpClient.get(url, true, currentUser).subscribe(
         (response: any) => {
-          observer.next(response);
+          const sections = response[this.resource];
+          observer.next(sections);
           observer.complete();
         },
         error => {

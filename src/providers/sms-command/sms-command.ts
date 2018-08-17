@@ -7,6 +7,7 @@ import { DataSet } from '../../models/dataSet';
 import { SmsCommand } from '../../models/smsCommand';
 import { SMS } from '@ionic-native/sms';
 import { Observable } from 'rxjs/Observable';
+import * as _ from 'lodash';
 
 /*
   Generated class for the SmsCommandProvider provider.
@@ -188,7 +189,6 @@ export class SmsCommandProvider {
     let dataSetCounter = 0;
     dataSets.map((dataSet: DataSet) => {
       let smsCodeIndex = 0;
-      let dataElementCount = 0;
       let dataElements = [];
       let smsCodes = [];
       if (dataSet.dataElements) {
@@ -207,16 +207,15 @@ export class SmsCommandProvider {
         optionCombos = categoryCombo['categoryOptionCombos'];
         optionCombos.map((optionCombo: any) => {
           let smsCode = this.getCodeCharacter(smsCodeIndex, new_format);
-          smsCodes.push({
+          smsCodes = _.concat(smsCodes, {
             categoryOptionCombos: optionCombo.id,
             dataElement: dataElement,
             smsCode: smsCode
           });
           smsCodeIndex++;
         });
-        dataElementCount++;
       });
-      smsCommands.push({
+      smsCommands = _.concat(smsCommands, {
         dataSetId: dataSet.id,
         commandName: this.getCodeCharacter(dataSetCounter, new_format),
         separator: ':',
@@ -298,7 +297,8 @@ export class SmsCommandProvider {
     dataElements.forEach((dataElement: any) => {
       dataElement.categoryCombo.categoryOptionCombos.forEach(
         (categoryOptionCombo: any) => {
-          ids.push(
+          ids = _.concat(
+            ids,
             dataSetId +
               '-' +
               dataElement.id +
@@ -320,7 +320,7 @@ export class SmsCommandProvider {
         currentUser.currentDatabase
       ).subscribe(
         (dataValues: any) => {
-          dataValues.forEach((dataValue: any) => {
+          dataValues.map((dataValue: any) => {
             let id = dataValue.de + '-' + dataValue.co;
             entryFormDataValuesObjectFromStorage[id] = dataValue.value;
           });
@@ -369,7 +369,7 @@ export class SmsCommandProvider {
               value
             ).length > smsLimit
           ) {
-            sms.push(smsForReportingData);
+            sms = _.concat(sms, smsForReportingData);
             firstValuesFound = false;
             smsForReportingData =
               smsCommand.commandName + ' ' + selectedPeriod.iso + ' ';
@@ -459,8 +459,8 @@ export class SmsCommandProvider {
     if (dataSet.dataElements && dataSet.dataElements.length > 0) {
       dataElements = dataSet.dataElements;
     } else if (dataSet.dataSetElements && dataSet.dataSetElements.length > 0) {
-      dataSet.dataSetElements.forEach((dataSetElement: any) => {
-        dataElements.push(dataSetElement.dataElement);
+      dataSet.dataSetElements.map((dataSetElement: any) => {
+        dataElements = _.concat(dataElements, dataSetElement.dataElement);
       });
     }
     return dataElements;

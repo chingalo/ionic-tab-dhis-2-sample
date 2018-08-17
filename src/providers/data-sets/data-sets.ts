@@ -435,15 +435,12 @@ export class DataSetsProvider {
    * @param currentUser
    * @returns {Observable<any>}
    */
-  downloadDataSetsFromServer(
-    currentUser: CurrentUser,
-    dataSetIds?: string[]
-  ): Observable<any> {
-    let dataSets = [];
+  downloadDataSetsFromServer(currentUser: CurrentUser): Observable<any> {
+    let dataSetSResponse = [];
     const { userOrgUnitIds } = currentUser;
     return new Observable(observer => {
       if (userOrgUnitIds && userOrgUnitIds.length == 0) {
-        observer.next(dataSets);
+        observer.next(dataSetSResponse);
         observer.complete();
       } else {
         const fields =
@@ -462,9 +459,11 @@ export class DataSetsProvider {
         ).subscribe(
           (response: any) => {
             try {
-              dataSets = response[this.resource];
-              console.log(dataSetIds);
-              observer.next(dataSets);
+              dataSetSResponse = this.getFitlteredListOfDataSets(
+                response[this.resource],
+                currentUser
+              );
+              observer.next(dataSetSResponse);
               observer.complete();
             } catch (e) {
               observer.error(e);
@@ -476,6 +475,30 @@ export class DataSetsProvider {
         );
       }
     });
+  }
+
+  getFitlteredListOfDataSets(
+    dataSetsResponse: any[],
+    currentUser: CurrentUser
+  ) {
+    let filteredDataSets = [];
+    const { dataSets } = currentUser;
+    const { authorities } = currentUser;
+    if (authorities.indexOf('ALL') > -1) {
+      filteredDataSets = _.concat(filteredDataSets, dataSetsResponse);
+    } else {
+      dataSetsResponse.map((dataSetObject: any) => {
+        if (
+          dataSets &&
+          dataSetObject &&
+          dataSetObject.id &&
+          dataSets.indexOf(dataSetObject.id) > -1
+        ) {
+          filteredDataSets = _.concat(filteredDataSets, dataSetObject);
+        }
+      });
+    }
+    return filteredDataSets;
   }
 
   /**

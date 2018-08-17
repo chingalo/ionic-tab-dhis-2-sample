@@ -73,7 +73,11 @@ export class ProgramsProvider {
     return new Observable(observer => {
       this.HttpClient.get(url, true, currentUser).subscribe(
         (response: any) => {
-          observer.next(response);
+          const programs = this.getFitlteredListOfPrograms(
+            response[this.resource],
+            currentUser
+          );
+          observer.next(programs);
           observer.complete();
         },
         error => {
@@ -81,6 +85,30 @@ export class ProgramsProvider {
         }
       );
     });
+  }
+
+  getFitlteredListOfPrograms(
+    programsResponse: any[],
+    currentUser: CurrentUser
+  ) {
+    let filteredPrograms = [];
+    const { programs } = currentUser;
+    const { authorities } = currentUser;
+    if (authorities.indexOf('ALL') > -1) {
+      filteredPrograms = _.concat(filteredPrograms, programsResponse);
+    } else {
+      programsResponse.map((programObject: any) => {
+        if (
+          programs &&
+          programObject &&
+          programObject.id &&
+          programs.indexOf(programObject.id) > -1
+        ) {
+          filteredPrograms = _.concat(filteredPrograms, programObject);
+        }
+      });
+    }
+    return filteredPrograms;
   }
 
   getSanitizedPrograms(programs) {
