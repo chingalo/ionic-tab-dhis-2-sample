@@ -126,7 +126,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       this.resetQueueManager();
     }
     if (this.currentUser) {
-      this.authenticateUser(this.currentUser, this.processes);
+      this.resetCUrrentUserOptionalvalues();
     } else {
       const error = 'Missing current user data';
       this.onFailToLogin({ error });
@@ -144,6 +144,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     delete this.currentUser.name;
     delete this.currentUser.authorizationKey;
     delete this.currentUser.currentDatabase;
+    this.authenticateUser(this.currentUser, this.processes);
   }
 
   authenticateUser(currentUser: CurrentUser, processes: string[]) {
