@@ -184,11 +184,8 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   onFailLogin(errorReponse) {
-    console.log(JSON.stringify(errorReponse));
-    // const { error } = errorReponse;
-    // const message = error ? error : errorReponse;
-    // this.appProvider.setNormalNotification(message);
-    // this.onCancelLoginProcess();
+    this.appProvider.setNormalNotification(errorReponse);
+    this.onCancelLoginProcess();
   }
 
   onSuccessLogin(currentUser) {

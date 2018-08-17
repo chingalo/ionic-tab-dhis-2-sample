@@ -81,15 +81,21 @@ export class AppProvider {
   }
 
   getSanitizedMessage(message) {
+    const { error } = message;
+    const { status } = message;
+    let customMessage = error ? error : message;
     try {
       const matchRegx = /<body[^>]*>([\w|\W]*)<\/body/im;
-      message = message
+      customMessage = customMessage
         .match(matchRegx)[0]
         .replace(/(<([^>]+)>)/gi, ':separator:')
         .split(':separator:')
         .filter(content => content.length > 0)[0];
     } catch (e) {}
-    return message;
+    if (status) {
+      customMessage = 'Status ' + status + ' : ' + customMessage;
+    }
+    return customMessage;
   }
 
   /**
