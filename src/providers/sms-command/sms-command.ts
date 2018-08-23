@@ -78,7 +78,7 @@ export class SmsCommandProvider {
    * @param databaseName
    * @returns {Observable<any>}
    */
-  savingSmsCommand(smsCommands, databaseName): Observable<any> {
+  savingSmsCommand(smsCommands, databaseName: string): Observable<any> {
     return new Observable(observer => {
       if (smsCommands.length == 0) {
         observer.next();

@@ -336,11 +336,15 @@ export class ProgramRulesProvider {
     });
   }
 
-  savingProgramRules(data, currentUser: CurrentUser): Observable<any> {
+  savingProgramRules(programRules, currentUser: CurrentUser): Observable<any> {
     const resource = 'programRules';
     return new Observable(observer => {
       this.sqlLite
-        .insertBulkDataOnTable(resource, data, currentUser.currentDatabase)
+        .insertBulkDataOnTable(
+          resource,
+          programRules,
+          currentUser.currentDatabase
+        )
         .subscribe(
           () => {
             observer.next();
@@ -353,11 +357,18 @@ export class ProgramRulesProvider {
     });
   }
 
-  savingProgramRuleActions(data, currentUser: CurrentUser): Observable<any> {
+  savingProgramRuleActions(
+    programRuleActions,
+    currentUser: CurrentUser
+  ): Observable<any> {
     const resource = 'programRuleActions';
     return new Observable(observer => {
       this.sqlLite
-        .insertBulkDataOnTable(resource, data, currentUser.currentDatabase)
+        .insertBulkDataOnTable(
+          resource,
+          programRuleActions,
+          currentUser.currentDatabase
+        )
         .subscribe(
           () => {
             observer.next();
@@ -371,11 +382,18 @@ export class ProgramRulesProvider {
     });
   }
 
-  savingProgramRuleVariables(data, currentUser: CurrentUser): Observable<any> {
+  savingProgramRuleVariables(
+    programRuleVariables,
+    currentUser: CurrentUser
+  ): Observable<any> {
     const resource = 'programRuleVariables';
     return new Observable(observer => {
       this.sqlLite
-        .insertBulkDataOnTable(resource, data, currentUser.currentDatabase)
+        .insertBulkDataOnTable(
+          resource,
+          programRuleVariables,
+          currentUser.currentDatabase
+        )
         .subscribe(
           () => {
             observer.next();

@@ -105,7 +105,6 @@ export class SqlLiteProvider {
         .then((db: SQLiteObject) => {
           db.executeSql(query, []).then(
             () => {
-              console.log('Success create table ' + tableName);
               observer.next();
               observer.complete();
             },

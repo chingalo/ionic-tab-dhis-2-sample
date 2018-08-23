@@ -143,7 +143,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     delete this.currentUser.dataViewOrganisationUnits;
     delete this.currentUser.name;
     delete this.currentUser.authorizationKey;
-    delete this.currentUser.currentDatabase;
     this.authenticateUser(this.currentUser, this.processes);
   }
 
@@ -151,7 +150,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     currentUser.serverUrl = this.appProvider.getFormattedBaseUrl(
       currentUser.serverUrl
     );
-
     const networkStatus = this.networkAvailabilityProvider.getNetWorkStatus();
     const { isAvailable } = networkStatus;
     if (!isAvailable && this.isOnLogin) {
@@ -706,7 +704,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startDownloadProcess(process: string) {
-    console.log('process : ' + process + ' downloading');
     if (this.completedTrackedProcess.indexOf(process) === -1) {
       if (process === 'organisationUnits') {
         this.subscriptions.add(
@@ -897,24 +894,176 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startSavingProcess(process: string, data: any) {
-    //console.log('On saving : ' + process + ' : ' + JSON.stringify(data));
     if (process === 'organisationUnits') {
+      this.subscriptions.add(
+        this.organisationUnitsProvider
+          .savingOrganisationUnitsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'dataSets') {
+      this.subscriptions.add(
+        this.dataSetsProvider
+          .saveDataSetsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            errror => {
+              this.onFailToLogin(errror);
+            }
+          )
+      );
     } else if (process === 'sections') {
+      this.subscriptions.add(
+        this.sectionsProvider
+          .saveSectionsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'dataElements') {
+      this.subscriptions.add(
+        this.dataElementsProvider
+          .saveDataElementsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'smsCommand') {
+      this.subscriptions.add(
+        this.smsCommandProvider
+          .savingSmsCommand(data, this.currentUser.currentDatabase)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'programs') {
+      this.subscriptions.add(
+        this.programsProvider
+          .saveProgramsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'programStageSections') {
+      this.subscriptions.add(
+        this.programStageSectionsProvider
+          .saveProgramsStageSectionsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'programRules') {
+      this.subscriptions.add(
+        this.programRulesProvider
+          .savingProgramRules(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'programRuleActions') {
+      this.subscriptions.add(
+        this.programRulesProvider
+          .savingProgramRuleActions(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'programRuleVariables') {
+      this.subscriptions.add(
+        this.programRulesProvider
+          .savingProgramRuleVariables(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'indicators') {
+      this.subscriptions.add(
+        this.indicatorsProvider
+          .savingIndicatorsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'reports') {
+      this.subscriptions.add(
+        this.standardReportProvider
+          .saveReportsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     } else if (process === 'constants') {
+      this.subscriptions.add(
+        this.standardReportProvider
+          .saveConstantsFromServer(data, this.currentUser)
+          .subscribe(
+            () => {
+              this.removeFromQueue(process, 'saving');
+            },
+            error => {
+              this.onFailToLogin(error);
+            }
+          )
+      );
     }
-    setTimeout(() => {
-      this.removeFromQueue(process, 'saving');
-    }, 1000);
   }
 
   clearAllSubscriptions() {

@@ -57,19 +57,29 @@ export class UserProvider {
     if (user.dhisVersion && parseInt(user.dhisVersion) > 25) {
       url = url.replace('/api', '/api/' + user.dhisVersion);
     }
-    console.log(url);
     return new Observable(observer => {
       this.http
         .get(url, {}, {})
-        .then(
-          (response: any) => {
-            observer.next(JSON.parse(response.data));
+        .then((response: any) => {
+          let data = JSON.parse(response.data);
+          const { authorities } = data;
+          if (authorities) {
+            observer.next(data);
             observer.complete();
-          },
-          error => {
-            observer.error(error);
+          } else {
+            url = user.serverUrl + '/api/me/authorization';
+            this.http
+              .get(url, {}, {})
+              .then((response: any) => {
+                data['authorities'] = JSON.parse(response.data);
+                observer.next(data);
+                observer.complete();
+              })
+              .catch(error => {
+                observer.error(error);
+              });
           }
-        )
+        })
         .catch(error => {
           observer.error(error);
         });
