@@ -94,7 +94,7 @@ export class ProgramsProvider {
     let filteredPrograms = [];
     const { programs } = currentUser;
     const { authorities } = currentUser;
-    if (authorities.indexOf('ALL') > -1) {
+    if (authorities && authorities.indexOf('ALL') > -1) {
       filteredPrograms = _.concat(filteredPrograms, programsResponse);
     } else {
       programsResponse.map((programObject: any) => {

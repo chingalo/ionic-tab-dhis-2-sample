@@ -706,6 +706,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startDownloadProcess(process: string) {
+    console.log('process : ' + process + ' downloading');
     if (this.completedTrackedProcess.indexOf(process) === -1) {
       if (process === 'organisationUnits') {
         this.subscriptions.add(
@@ -716,6 +717,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -729,6 +731,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -742,6 +745,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -755,6 +759,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -768,6 +773,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -781,6 +787,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -794,6 +801,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -807,6 +815,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -820,6 +829,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -833,6 +843,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -846,6 +857,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -859,6 +871,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -872,6 +885,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
                 this.removeFromQueue(process, 'dowmloading', response);
               },
               error => {
+                console.log(process + ' : ' + JSON.stringify(error));
                 this.onFailToLogin(error);
               }
             )
@@ -883,7 +897,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startSavingProcess(process: string, data: any) {
-    console.log('On saving : ' + process + ' : ' + JSON.stringify(data));
+    //console.log('On saving : ' + process + ' : ' + JSON.stringify(data));
     if (process === 'organisationUnits') {
     } else if (process === 'dataSets') {
     } else if (process === 'sections') {
@@ -914,7 +928,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
 
   ngOnDestroy() {
     this.clearAllSubscriptions();
-    this.currentUser = null;
     this.processes = null;
     this.isOnLogin = null;
     this.overAllMessage = null;

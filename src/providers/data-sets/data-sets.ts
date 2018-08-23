@@ -481,8 +481,9 @@ export class DataSetsProvider {
         ).subscribe(
           (response: any) => {
             try {
+              const { dataSets } = response;
               dataSetSResponse = this.getFitlteredListOfDataSets(
-                response[this.resource],
+                dataSets,
                 currentUser
               );
               observer.next(dataSetSResponse);
@@ -506,7 +507,7 @@ export class DataSetsProvider {
     let filteredDataSets = [];
     const { dataSets } = currentUser;
     const { authorities } = currentUser;
-    if (authorities.indexOf('ALL') > -1) {
+    if (authorities && authorities.indexOf('ALL') > -1) {
       filteredDataSets = _.concat(filteredDataSets, dataSetsResponse);
     } else {
       dataSetsResponse.map((dataSetObject: any) => {

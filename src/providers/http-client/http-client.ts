@@ -165,7 +165,6 @@ export class HttpClientProvider {
                               resourceName
                             ].concat(response[resourceName]);
                           })
-                          .catch(error => {})
                       );
                     }
                     Observable.forkJoin(promises).subscribe(

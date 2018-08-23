@@ -83,7 +83,11 @@ export class AppProvider {
   getSanitizedMessage(message) {
     const { error } = message;
     const { status } = message;
-    let customMessage = error ? error : message;
+    let customMessage = error
+      ? error
+      : typeof message === 'object'
+        ? ''
+        : message;
     try {
       const matchRegx = /<body[^>]*>([\w|\W]*)<\/body/im;
       customMessage = customMessage
