@@ -371,6 +371,8 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         ? currentUser.progressTracker[currentUser.currentDatabase]
         : emptyProgressTracker;
     Object.keys(progressTrackerObject).map((key: string) => {
+      progressTrackerObject[key].expectedProcesses =
+        emptyProgressTracker[key].expectedProcesses;
       progressTrackerObject[key].totalPassedProcesses = 0;
       this.trackedProcessWithLoader[key] = false;
       if (key === 'communication') {
@@ -409,7 +411,7 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
             message: ''
           };
         }
-        progressTracker[resourceType].expectedProcesses += 2;
+        progressTracker[resourceType].expectedProcesses += 3;
       }
     });
     return progressTracker;
@@ -492,7 +494,11 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     Object.keys(progressTracker).map((resourceType: string) => {
       progressTracker[resourceType].passedProcesses.map(
         (passedProcess: any) => {
-          if (passedProcess.indexOf('-saving') > -1) {
+          const type =
+            passedProcess.split('-').length > 1
+              ? passedProcess.split('-')[1]
+              : passedProcess;
+          if (type === 'saving') {
             passedProcess = passedProcess.split('-')[0];
             if (passedProcess) {
               completedTrackedProcess = _.concat(
@@ -560,8 +566,6 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   removeFromQueue(process: string, type: string, data?: any) {
-    const progressMessage = this.getProgressMessage(process, type);
-    this.updateProgressTrackerObject(process + '-' + type, progressMessage);
     if (type && type === 'saving') {
       _.remove(
         this.savingingQueueManager.denqueuedProcess,
@@ -572,6 +576,12 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       const { currentDatabase } = this.currentUser;
       this.completedTrackedProcess = this.getCompletedTrackedProcess(
         this.currentUser.progressTracker[currentDatabase]
+      );
+      const processType = 'saving';
+      const progressMessage = this.getProgressMessage(process, processType);
+      this.updateProgressTrackerObject(
+        process + '-' + processType,
+        progressMessage
       );
       this.checkingAndStartSavingProcess();
     } else if (type && type === 'dowmloading') {
@@ -584,8 +594,14 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       if (data) {
         this.addIntoQueue(process, 'saving', data);
       } else {
-        const processType = 'saving';
-        const progressMessage = this.getProgressMessage(process, processType);
+        let processType = 'start-saving';
+        let progressMessage = this.getProgressMessage(process, processType);
+        this.updateProgressTrackerObject(
+          process + '-' + processType,
+          progressMessage
+        );
+        processType = 'saving';
+        progressMessage = this.getProgressMessage(process, processType);
         this.updateProgressTrackerObject(
           process + '-' + processType,
           progressMessage
@@ -624,6 +640,38 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         progressMessage = 'Discovering standard reports';
       } else if (process === 'constants') {
         progressMessage = 'Discovering constants';
+      } else {
+        progressMessage = 'Discovering ' + process;
+      }
+    } else if (processType === 'start-saving') {
+      if (process === 'organisationUnits') {
+        progressMessage = 'Saving assigned organisation units';
+      } else if (process === 'dataSets') {
+        progressMessage = 'Saving entry forms';
+      } else if (process === 'sections') {
+        progressMessage = 'Saving entry form sections';
+      } else if (process === 'dataElements') {
+        progressMessage = 'Saving entry form fields';
+      } else if (process === 'smsCommand') {
+        progressMessage = 'Saving SMS commands';
+      } else if (process === 'programs') {
+        progressMessage = 'Saving programs';
+      } else if (process === 'programStageSections') {
+        progressMessage = 'Saving program stage section';
+      } else if (process === 'programRules') {
+        progressMessage = 'Saving program rules';
+      } else if (process === 'programRuleActions') {
+        progressMessage = 'Saving program rules actions';
+      } else if (process === 'programRuleVariables') {
+        progressMessage = 'Saving program rules variables';
+      } else if (process === 'indicators') {
+        progressMessage = 'Saving indicators';
+      } else if (process === 'reports') {
+        progressMessage = 'Saving standard reports';
+      } else if (process === 'constants') {
+        progressMessage = 'Saving constants';
+      } else {
+        progressMessage = 'Saving ' + process;
       }
     } else if (processType === 'saving') {
       if (process === 'organisationUnits') {
@@ -652,6 +700,8 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         progressMessage = 'Reports have been discovered';
       } else if (process === 'constants') {
         progressMessage = 'Constants have been discovered';
+      } else {
+        progressMessage = process + ' have been discovered';
       }
     }
     return progressMessage;
@@ -704,6 +754,9 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startDownloadProcess(process: string) {
+    const type = 'dowmloading';
+    const progressMessage = this.getProgressMessage(process, type);
+    this.updateProgressTrackerObject(process + '-' + type, progressMessage);
     if (this.completedTrackedProcess.indexOf(process) === -1) {
       if (process === 'organisationUnits') {
         this.subscriptions.add(
@@ -894,6 +947,9 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   startSavingProcess(process: string, data: any) {
+    const type = 'start-saving';
+    const progressMessage = this.getProgressMessage(process, type);
+    this.updateProgressTrackerObject(process + '-' + type, progressMessage);
     if (process === 'organisationUnits') {
       this.subscriptions.add(
         this.organisationUnitsProvider
