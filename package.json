@@ -21,6 +21,7 @@
     "@angular/platform-browser": "5.2.11",
     "@angular/platform-browser-dynamic": "5.2.11",
     "@ionic-native/app-version": "^4.10.1",
+    "@ionic-native/background-mode": "^4.12.0",
     "@ionic-native/barcode-scanner": "^4.10.1",
     "@ionic-native/core": "~4.10.0",
     "@ionic-native/date-picker": "^4.10.1",
@@ -91,7 +92,8 @@
       "cordova-plugin-geolocation": {
         "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
       },
-      "cordova-sms-plugin": {}
+      "cordova-sms-plugin": {},
+      "cordova-plugin-background-mode": {}
     },
     "platforms": [
       "android"

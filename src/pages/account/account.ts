@@ -22,7 +22,9 @@
  *
  */
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, App } from 'ionic-angular';
+import { UserProvider } from '../../providers/user/user';
+import { CurrentUser } from '../../models/currentUser';
 
 /**
  * Generated class for the AccountPage page.
@@ -37,9 +39,22 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'account.html'
 })
 export class AccountPage {
-  constructor(public navCtrl: NavController, public navParams: NavParams) {}
+  constructor(
+    private App: App,
+    private navCtrl: NavController,
+    private userProvider: UserProvider
+  ) {}
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AccountPage');
+  logOut() {
+    this.userProvider.getCurrentUser().subscribe((currentUser: CurrentUser) => {
+      if (currentUser && currentUser.username) {
+        currentUser.isLogin = false;
+        this.userProvider.setCurrentUser(currentUser).subscribe(() => {
+          this.App.getRootNav().setRoot('LoginPage');
+        });
+      } else {
+        this.App.getRootNav().setRoot('LoginPage');
+      }
+    });
   }
 }

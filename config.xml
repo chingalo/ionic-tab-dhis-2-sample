@@ -99,5 +99,6 @@
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
     <plugin name="cordova-sms-plugin" spec="~0.1.11" />
+    <plugin name="cordova-plugin-background-mode" spec="~0.7.2" />
     <engine name="android" spec="7.0.0" />
 </widget>
