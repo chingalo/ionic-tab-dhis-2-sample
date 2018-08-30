@@ -23,10 +23,14 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
-import { TabsPage } from '../tabs/tabs';
+
+import { Store } from '@ngrx/store';
+import { State, AddCurrentUser } from '../../store';
+
 import { UserProvider } from '../../providers/user/user';
 import { NetworkAvailabilityProvider } from '../../providers/network-availability/network-availability';
 import { AppTranslationProvider } from '../../providers/app-translation/app-translation';
+import { CurrentUser } from '../../models/currentUser';
 
 /**
  * Generated class for the LaunchPage page.
@@ -47,27 +51,26 @@ export class LaunchPage implements OnInit {
     private navCtrl: NavController,
     private UserProvider: UserProvider,
     private NetworkAvailabilityProvider: NetworkAvailabilityProvider,
-    private appTranslationProvider: AppTranslationProvider
+    private appTranslationProvider: AppTranslationProvider,
+    private store: Store<State>
   ) {
     this.logoUrl = 'assets/img/logo.png';
   }
 
   ngOnInit() {
     this.NetworkAvailabilityProvider.setNetworkStatusDetection();
-    this.UserProvider.getCurrentUser().subscribe(
-      (user: any) => {
-        let currentLanguage = 'en';
-        if (user && user.currentLanguage) {
-          currentLanguage = user.currentLanguage;
-        }
-        this.appTranslationProvider.setAppTranslation(currentLanguage);
-        if (user && user.isLogin) {
-          this.navCtrl.setRoot(TabsPage);
-        } else {
-          this.navCtrl.setRoot('LoginPage');
-        }
-      },
-      error => {}
-    );
+    this.UserProvider.getCurrentUser().subscribe((currentUser: CurrentUser) => {
+      let currentLanguage = 'en';
+      if (currentUser && currentUser.currentLanguage) {
+        currentLanguage = currentUser.currentLanguage;
+      }
+      this.appTranslationProvider.setAppTranslation(currentLanguage);
+      if (currentUser && currentUser.isLogin) {
+        this.store.dispatch(new AddCurrentUser({ currentUser }));
+        this.navCtrl.setRoot('HomePage');
+      } else {
+        this.navCtrl.setRoot('LoginPage');
+      }
+    });
   }
 }

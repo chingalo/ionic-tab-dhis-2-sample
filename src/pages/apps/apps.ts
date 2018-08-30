@@ -22,8 +22,10 @@
  *
  */
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { IonicPage, NavController } from 'ionic-angular';
+import { Store } from '@ngrx/store';
+import { State, getCurrentUser } from '../../store';
+import { Observable } from 'rxjs';
 /**
  * Generated class for the AppsPage page.
  *
@@ -37,9 +39,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'apps.html'
 })
 export class AppsPage {
-  constructor(public navCtrl: NavController, public navParams: NavParams) {}
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AppsPage');
+  currentUser$: Observable<any>;
+  constructor(public navCtrl: NavController, private store: Store<State>) {
+    this.currentUser$ = store.select(getCurrentUser);
   }
 }

@@ -26,14 +26,11 @@ import { IonicPageModule } from 'ionic-angular';
 import { LoginPage } from './login';
 import { TranslateModule } from '@ngx-translate/core';
 import { loginComponentsModule } from './components/loginComponents.module';
-import { StoreModule } from '@ngrx/store';
-import { reducers } from '../../store';
 
 @NgModule({
   declarations: [LoginPage],
   imports: [
     IonicPageModule.forChild(LoginPage),
-    StoreModule.forFeature('login', reducers),
     TranslateModule.forChild({}),
     loginComponentsModule
   ]

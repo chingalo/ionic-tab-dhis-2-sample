@@ -21,7 +21,32 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-export * from './reducers';
-export * from './actions';
-export * from './effects';
-export * from './selectors';
+import { createSelector } from '@ngrx/store';
+import { getRootState, State } from '../reducers';
+import { currentUserAdapter } from '../reducers/current-user.reducers';
+
+export const getUsersEntityState = createSelector(
+  getRootState,
+  (state: State) => state.currentUser
+);
+
+const getCurrentUserId = createSelector(
+  getUsersEntityState,
+  state => state.currentUserId
+);
+
+export const {
+  selectIds: getCurrentUserIds,
+  selectEntities: getCurrentUserEntities,
+  selectAll: getAllCurrentUsers
+} = currentUserAdapter.getSelectors(getUsersEntityState);
+
+export const getCurrentUser = createSelector(
+  getCurrentUserId,
+  getCurrentUserEntities,
+  (currentUserId, entities) => {
+    return currentUserId && entities && entities[currentUserId]
+      ? entities[currentUserId]
+      : null;
+  }
+);
