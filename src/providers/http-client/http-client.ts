@@ -30,7 +30,6 @@ import { CurrentUser } from '../../models/currentUser';
 import { EncryptionProvider } from '../encryption/encryption';
 import { NetworkAvailabilityProvider } from '../network-availability/network-availability';
 import { Storage } from '@ionic/storage';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 /*
   Generated class for the HttpClientProvider provider.
 
@@ -44,7 +43,6 @@ export class HttpClientProvider {
     private http: HTTP,
     private encryption: EncryptionProvider,
     public storage: Storage,
-    private defaultHttp: HttpClient,
     private networkProvider: NetworkAvailabilityProvider
   ) {
     this.timeOutTime = 4 * 60 * 1000;
@@ -239,6 +237,7 @@ export class HttpClientProvider {
             sanitizedUser.username,
             sanitizedUser.password
           );
+          this.http.setDataSerializer('json');
           this.http.setRequestTimeout(this.timeOutTime);
           apiUrl =
             user.serverUrl + this.getUrlBasedOnDhisVersion(url, sanitizedUser);
@@ -264,78 +263,33 @@ export class HttpClientProvider {
     });
   }
 
-  /**
-   *
-   * @param url
-   * @param data
-   * @param user
-   * @returns {Observable<any>}
-   */
-  defaultPost(url, data, user?): Observable<any> {
-    let apiUrl = '';
-    return new Observable(observer => {
-      this.getSanitizedUser(user).subscribe(
-        (sanitizedUser: CurrentUser) => {
-          apiUrl =
-            sanitizedUser.serverUrl +
-            this.getUrlBasedOnDhisVersion(url, sanitizedUser);
-          let headers = new HttpHeaders();
-          headers.append(
-            'Authorization',
-            'Basic ' + sanitizedUser.authorizationKey
-          );
-          this.defaultHttp
-            .post(apiUrl, data, { headers: headers })
-            .timeout(this.timeOutTime)
-            .subscribe(
-              (response: any) => {
-                observer.next();
-                observer.complete();
-              },
-              error => {
-                observer.error(error.json());
-              }
-            );
-        },
-        error => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  /**
-   *
-   * @param url
-   * @param data
-   * @param user
-   * @returns {Observable<any>}
-   */
   put(url, data, user?): Observable<any> {
     let apiUrl = '';
     return new Observable(observer => {
       this.getSanitizedUser(user).subscribe(
         (sanitizedUser: CurrentUser) => {
-          apiUrl =
-            sanitizedUser.serverUrl +
-            this.getUrlBasedOnDhisVersion(url, sanitizedUser);
-          let headers = new HttpHeaders();
-          headers.append(
-            'Authorization',
-            'Basic ' + sanitizedUser.authorizationKey
+          this.http.useBasicAuth(
+            sanitizedUser.username,
+            sanitizedUser.password
           );
-          this.defaultHttp
-            .put(apiUrl, data, { headers: headers })
-            .timeout(this.timeOutTime)
-            .subscribe(
-              response => {
+          this.http.setDataSerializer('json');
+          this.http.setRequestTimeout(this.timeOutTime);
+          apiUrl =
+            user.serverUrl + this.getUrlBasedOnDhisVersion(url, sanitizedUser);
+          this.http
+            .put(apiUrl, data, {})
+            .then(
+              (response: any) => {
                 observer.next(response);
                 observer.complete();
               },
               error => {
-                observer.error(error.json());
+                observer.error(error);
               }
-            );
+            )
+            .catch(error => {
+              observer.error(error);
+            });
         },
         error => {
           observer.error(error);
@@ -355,26 +309,28 @@ export class HttpClientProvider {
     return new Observable(observer => {
       this.getSanitizedUser(user).subscribe(
         (sanitizedUser: CurrentUser) => {
-          apiUrl =
-            sanitizedUser.serverUrl +
-            this.getUrlBasedOnDhisVersion(url, sanitizedUser);
-          let headers = new HttpHeaders();
-          headers.append(
-            'Authorization',
-            'Basic ' + sanitizedUser.authorizationKey
+          this.http.useBasicAuth(
+            sanitizedUser.username,
+            sanitizedUser.password
           );
-          this.defaultHttp
-            .delete(apiUrl, { headers: headers })
-            .timeout(this.timeOutTime)
-            .subscribe(
-              response => {
+          this.http.setDataSerializer('json');
+          this.http.setRequestTimeout(this.timeOutTime);
+          apiUrl =
+            user.serverUrl + this.getUrlBasedOnDhisVersion(url, sanitizedUser);
+          this.http
+            .delete(apiUrl, {}, {})
+            .then(
+              (response: any) => {
                 observer.next(response);
                 observer.complete();
               },
               error => {
-                observer.error(error.json());
+                observer.error(error);
               }
-            );
+            )
+            .catch(error => {
+              observer.error(error);
+            });
         },
         error => {
           observer.error(error);

@@ -31,6 +31,7 @@ import { UserProvider } from '../../providers/user/user';
 import { NetworkAvailabilityProvider } from '../../providers/network-availability/network-availability';
 import { AppTranslationProvider } from '../../providers/app-translation/app-translation';
 import { CurrentUser } from '../../models/currentUser';
+import { TabsPage } from '../tabs/tabs';
 
 /**
  * Generated class for the LaunchPage page.
@@ -67,7 +68,7 @@ export class LaunchPage implements OnInit {
       this.appTranslationProvider.setAppTranslation(currentLanguage);
       if (currentUser && currentUser.isLogin) {
         this.store.dispatch(new AddCurrentUser({ currentUser }));
-        this.navCtrl.setRoot('HomePage');
+        this.navCtrl.setRoot(TabsPage);
       } else {
         this.navCtrl.setRoot('LoginPage');
       }

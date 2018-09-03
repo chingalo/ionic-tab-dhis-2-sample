@@ -21,18 +21,23 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { AppsPage } from './apps';
-import { TranslateModule } from '@ngx-translate/core';
-import { AppsComponentsModule } from './components/appsComponents.module';
+import { Component, OnInit } from '@angular/core';
 
-@NgModule({
-  declarations: [AppsPage],
-  imports: [
-    IonicPageModule.forChild(AppsPage),
-    TranslateModule.forChild({}),
-    AppsComponentsModule
-  ]
+/**
+
+* Generated class for the AppsContainerComponent component.
+ *
+ * See https://angular.io/api/core/Component for more info on Angular
+ * Components.
+ */
+@Component({
+  selector: 'apps-container',
+  templateUrl: 'apps-container.html'
 })
-export class AppsPageModule {}
+export class AppsContainerComponent implements OnInit {
+  constructor() {}
+
+  ngOnInit() {
+    console.log('Apps container');
+  }
+}

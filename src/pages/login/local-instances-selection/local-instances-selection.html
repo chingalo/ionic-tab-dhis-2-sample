@@ -23,24 +23,17 @@
 *
 -->
 <ion-header>
-  <ion-navbar color="primary">
-    <ion-title>
-      <span [translate]="'Offline instances'"></span>
-    </ion-title>
+  <ion-toolbar color="primary">
+    <ion-searchbar animated="true" autocomplete="on" placeholder="{{ 'Search'|translate }}" (ionInput)="getFilteredList($event)"></ion-searchbar>
     <ion-buttons end (click)="dismiss()">
       <button ion-button clear color="danger" text-capitalize>
         <img class="cancel-button" [src]="cancelIcon" />
       </button>
     </ion-buttons>
-  </ion-navbar>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
   <ion-grid>
-    <ion-row>
-      <ion-col col-12>
-        <ion-searchbar animated="true" autocomplete="on" placeholder="{{ 'Search'|translate }}" (ionInput)="getFilteredList($event)"></ion-searchbar>
-      </ion-col>
-    </ion-row>
     <ion-row>
       <ion-col>
         <ion-list>

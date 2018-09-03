@@ -134,15 +134,18 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
   }
 
   resetCUrrentUserOptionalvalues() {
-    delete this.currentUser.authorities;
-    delete this.currentUser.dhisVersion;
-    delete this.currentUser.id;
-    delete this.currentUser.userOrgUnitIds;
-    delete this.currentUser.dataSets;
-    delete this.currentUser.programs;
-    delete this.currentUser.dataViewOrganisationUnits;
-    delete this.currentUser.name;
-    delete this.currentUser.authorizationKey;
+    this.currentUser = _.omit(this.currentUser, [
+      'authorities',
+      'dhisVersion',
+      'id',
+      'userOrgUnitIds',
+      'dataSets',
+      'programs',
+      'dataViewOrganisationUnits',
+      'name',
+      'authorizationKey',
+      'currentDatabase'
+    ]);
     this.authenticateUser(this.currentUser, this.processes);
   }
 
@@ -166,29 +169,34 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
       this.subscriptions.add(subscription);
     } else if (isAvailable) {
       const currentResouceType = 'communication';
-      let processTracker = this.getProgressTracker(currentUser, processes);
-      this.trackedResourceTypes = Object.keys(processTracker);
-      this.calculateAndSetProgressPercentage(
-        this.trackedResourceTypes,
-        processTracker
-      );
+      this.resetProgressTracker(currentUser, processes);
       const subscription = this.userProvider
         .onlineUserAuthentication(currentUser, currentUser.serverUrl)
         .subscribe(
           response => {
             const { serverUrl } = response;
             const { currentUser } = response;
+            const { progressTracker } = this.currentUser;
             this.currentUser = _.assign({}, currentUser);
+            //@todo update process tracker for sync module
+            this.currentUser['progressTracker'] = progressTracker
+              ? progressTracker
+              : {};
             this.currentUser.serverUrl = serverUrl;
             this.overAllMessage = serverUrl;
             this.currentUser.authorizationKey = btoa(
-              this.currentUser.username + ':' + this.currentUser.password
+              currentUser.username + ':' + currentUser.password
             );
             this.currentUser.currentDatabase = this.appProvider.getDataBaseName(
               this.currentUser.serverUrl,
               this.currentUser.username
             );
             const { currentDatabase } = this.currentUser;
+            this.resetProgressTracker(this.currentUser, processes);
+            const processTracker = this.getProgressTracker(
+              this.currentUser,
+              processes
+            );
             this.currentUser.progressTracker[currentDatabase] = processTracker;
             this.updateCurrentUser.emit(this.currentUser);
             this.updateProgressTrackerObject(
@@ -360,6 +368,15 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
     });
   }
 
+  resetProgressTracker(currentUser, processes) {
+    const processTracker = this.getProgressTracker(currentUser, processes);
+    this.trackedResourceTypes = Object.keys(processTracker);
+    this.calculateAndSetProgressPercentage(
+      this.trackedResourceTypes,
+      processTracker
+    );
+  }
+
   // @todo checking for upading tracker object
   getProgressTracker(currentUser: CurrentUser, processes: string[]) {
     const emptyProgressTracker = this.getEmptyProcessTracker(processes);
@@ -436,24 +453,26 @@ export class LoginMetadataSyncComponent implements OnDestroy, OnInit {
         : currentResouceType;
     const { currentDatabase } = this.currentUser;
     let progressTracker = this.currentUser.progressTracker[currentDatabase];
-    if (progressTracker[currentResouceType]) {
-      this.progressTrackerMessage[currentResouceType] = processMessage;
-      this.trackedProcessWithLoader[currentResouceType] = true;
-      progressTracker[currentResouceType].totalPassedProcesses++;
-      if (
-        progressTracker[currentResouceType].passedProcesses.indexOf(
-          process + '-' + typeOfProcess
-        ) === -1
-      ) {
-        progressTracker[currentResouceType].passedProcesses.push(
-          process + '-' + typeOfProcess
-        );
+    if (progressTracker) {
+      if (progressTracker[currentResouceType]) {
+        this.progressTrackerMessage[currentResouceType] = processMessage;
+        this.trackedProcessWithLoader[currentResouceType] = true;
+        progressTracker[currentResouceType].totalPassedProcesses++;
+        if (
+          progressTracker[currentResouceType].passedProcesses.indexOf(
+            process + '-' + typeOfProcess
+          ) === -1
+        ) {
+          progressTracker[currentResouceType].passedProcesses.push(
+            process + '-' + typeOfProcess
+          );
+        }
       }
+      this.calculateAndSetProgressPercentage(
+        this.trackedResourceTypes,
+        progressTracker
+      );
     }
-    this.calculateAndSetProgressPercentage(
-      this.trackedResourceTypes,
-      progressTracker
-    );
   }
 
   calculateAndSetProgressPercentage(

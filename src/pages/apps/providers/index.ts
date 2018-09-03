@@ -21,18 +21,5 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { AppsPage } from './apps';
-import { TranslateModule } from '@ngx-translate/core';
-import { AppsComponentsModule } from './components/appsComponents.module';
 
-@NgModule({
-  declarations: [AppsPage],
-  imports: [
-    IonicPageModule.forChild(AppsPage),
-    TranslateModule.forChild({}),
-    AppsComponentsModule
-  ]
-})
-export class AppsPageModule {}
+export const services = [];

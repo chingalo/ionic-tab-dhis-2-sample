@@ -22,17 +22,14 @@
  *
  */
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { AppsPage } from './apps';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { AppsComponentsModule } from './components/appsComponents.module';
+import { sharedComponentsModule } from '../../../components/sharedComponents.module';
+import { AppsContainerComponent } from './apps-container/apps-container';
 
 @NgModule({
-  declarations: [AppsPage],
-  imports: [
-    IonicPageModule.forChild(AppsPage),
-    TranslateModule.forChild({}),
-    AppsComponentsModule
-  ]
+  declarations: [AppsContainerComponent],
+  imports: [IonicModule, TranslateModule.forChild({}), sharedComponentsModule],
+  exports: [AppsContainerComponent]
 })
-export class AppsPageModule {}
+export class AppsComponentsModule {}

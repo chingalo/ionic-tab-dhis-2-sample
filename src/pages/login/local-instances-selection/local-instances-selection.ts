@@ -22,8 +22,7 @@
  *
  */
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonicPage, ViewController } from 'ionic-angular';
-import { Subscription } from 'rxjs/Subscription';
+import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 
 /**
  * Generated class for the LocalInstancesSelectionPage page.
@@ -40,26 +39,36 @@ import { Subscription } from 'rxjs/Subscription';
 export class LocalInstancesSelectionPage implements OnInit, OnDestroy {
   cancelIcon: string;
   localInstances: Array<any>;
-  subscriptions: Subscription;
 
-  constructor(private viewCtrl: ViewController) {
+  constructor(private viewCtrl: ViewController, private navParams: NavParams) {
     this.localInstances = [];
-    this.subscriptions = new Subscription();
   }
 
   ngOnInit() {
     this.cancelIcon = 'assets/icon/cancel.png';
+    this.setOrResetLocalInsatancesData();
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.subscriptions = new Subscription();
+  setOrResetLocalInsatancesData() {
+    const data = this.navParams.get('data');
+    const { localInstances } = data;
+    this.localInstances = localInstances ? localInstances : [];
   }
+
+  ngOnDestroy() {}
 
   getFilteredList(data) {
     const value = data.target.value;
+    this.setOrResetLocalInsatancesData();
     if (value && value.trim() != '') {
-      console.log('value : ' + value);
+      this.localInstances = this.localInstances.filter((localInstance: any) => {
+        return (
+          localInstance.name.toLowerCase().indexOf(value.toLowerCase()) > -1 ||
+          localInstance.currentUser.username
+            .toLowerCase()
+            .indexOf(value.toLowerCase()) > -1
+        );
+      });
     }
   }
 
