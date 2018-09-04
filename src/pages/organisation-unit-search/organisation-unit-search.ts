@@ -24,8 +24,8 @@ import { SettingsProvider } from '../../providers/settings/settings';
 })
 export class OrganisationUnitSearchPage implements OnInit {
   title: string;
-  arrayOfOrganisationUnitsArray: Array<OrganisationUnitModel>;
-  arrayOfOrganisationUnitsArrayBackup: Array<OrganisationUnitModel>;
+  arrayOfOrganisationUnitsArray: Array<OrganisationUnitModel[]>;
+  arrayOfOrganisationUnitsArrayBackup: Array<OrganisationUnitModel[]>;
   isLoading: boolean;
   currentPage: number;
   currentSelectedOrgUnitName: string;
@@ -177,7 +177,9 @@ export class OrganisationUnitSearchPage implements OnInit {
       : organisationUnit.name;
   }
 
-  getOrganisationUnitsWithPaginations(organisationUnits) {
+  getOrganisationUnitsWithPaginations(
+    organisationUnits: OrganisationUnitModel[]
+  ) {
     const pageSize = 200;
     return _.chunk(organisationUnits, pageSize);
   }

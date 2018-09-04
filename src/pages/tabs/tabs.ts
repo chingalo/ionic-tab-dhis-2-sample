@@ -22,6 +22,9 @@
  *
  */
 import { Component } from '@angular/core';
+import { Store, select } from '@ngrx/store';
+import { State, getAccountTitle } from '../../store';
+import { Observable } from 'rxjs';
 
 @Component({
   templateUrl: 'tabs.html'
@@ -30,5 +33,9 @@ export class TabsPage {
   tab1Root = 'AppsPage';
   tab2Root = 'AccountPage';
 
-  constructor() {}
+  accountTitle$: Observable<string>;
+
+  constructor(private store: Store<State>) {
+    this.accountTitle$ = this.store.pipe(select(getAccountTitle));
+  }
 }

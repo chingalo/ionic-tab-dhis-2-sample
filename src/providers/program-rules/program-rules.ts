@@ -75,7 +75,7 @@ export class ProgramRulesProvider {
           programRuleActions.map(programRuleAction => {
             if (programRuleAction && programRuleAction.id) {
               const id = programRuleAction.id;
-              const action = _.find(
+              const action: any = _.find(
                 programSkipLogicMetadata.programRuleActions,
                 {
                   id: id

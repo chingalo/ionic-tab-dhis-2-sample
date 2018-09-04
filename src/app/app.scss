@@ -64,6 +64,31 @@ ion-modal.inset-modal {
   padding: 20vh 7vw;
 }
 
+.app-item-container {
+  min-width: 105px;
+  max-width: 120px;
+}
+
+.apps-contents {
+  border: 0.5px solid #e6e6e7;
+  border-radius: 1rem;
+  padding: 5px 16px 5px;
+}
+
+.menu-app-icon-list {
+  width: 55%;
+  text-align: center;
+  margin: auto;
+}
+
+.menu-app {
+  text-align: center;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
 .required {
   color: #f53d3d;
 }

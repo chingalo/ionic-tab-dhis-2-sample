@@ -23,8 +23,9 @@
  */
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
-import { Store } from '@ngrx/store';
-import { State, getCurrentUser } from '../../store';
+import { Store, select } from '@ngrx/store';
+import { State, getAthorizedApps } from '../../store';
+import { AppItem } from '../../models';
 import { Observable } from 'rxjs';
 /**
  * Generated class for the AppsPage page.
@@ -39,8 +40,70 @@ import { Observable } from 'rxjs';
   templateUrl: 'apps.html'
 })
 export class AppsPage {
-  currentUser$: Observable<any>;
+  currentUserApps$: Observable<any>;
   constructor(public navCtrl: NavController, private store: Store<State>) {
-    this.currentUser$ = store.select(getCurrentUser);
+    const apps = this.getAppItems();
+    this.currentUserApps$ = this.store.pipe(select(getAthorizedApps(apps)));
+  }
+
+  onSelectApp(app: AppItem) {
+    this.navCtrl.push(app.pageName);
+  }
+
+  getAppItems(): Array<AppItem> {
+    return [
+      {
+        id: 'data_entry',
+        name: 'Data entry',
+        authorites: ['M_dhis-web-dataentry'],
+        pageName: 'DataEntryPage',
+        src: 'assets/icon/data-entry.png'
+      },
+      {
+        id: 'event_capture',
+        name: 'Event capture',
+        authorites: ['M_dhis-web-event-capture'],
+        pageName: 'EventCapturePage',
+        src: 'assets/icon/event-capture.png'
+      },
+      {
+        id: 'tracker_capture',
+        name: 'Tracker capture',
+        authorites: ['M_dhis-web-tracker-capture'],
+        pageName: 'TrackerCapturePage',
+        src: 'assets/icon/tracker-capture.png'
+      },
+      {
+        id: 'dashboard',
+        name: 'Dashboard',
+        authorites: [
+          'M_dhis-web-dashboard-integration',
+          'M_dhis-web-dashboard'
+        ],
+        pageName: 'DashboardPage',
+        src: 'assets/icon/dashboard.png'
+      },
+      {
+        id: 'reports',
+        name: 'Reports',
+        authorites: ['M_dhis-web-reporting'],
+        pageName: 'ReportsPage',
+        src: 'assets/icon/reports.png'
+      },
+      {
+        id: 'sync',
+        name: 'Sync',
+        authorites: [],
+        pageName: 'SyncPage',
+        src: 'assets/icon/sync.png'
+      },
+      {
+        id: 'settings',
+        name: 'Settings',
+        authorites: [],
+        pageName: 'SettingsPage',
+        src: 'assets/icon/settings.png'
+      }
+    ];
   }
 }

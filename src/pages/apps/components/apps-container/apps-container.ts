@@ -21,7 +21,8 @@
  * @author Joseph Chingalo <profschingalo@gmail.com>
  *
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { AppItem } from '../../../../models';
 
 /**
 
@@ -35,9 +36,35 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: 'apps-container.html'
 })
 export class AppsContainerComponent implements OnInit {
-  constructor() {}
+  @Input()
+  authorizedApps: AppItem[];
 
-  ngOnInit() {
-    console.log('Apps container');
+  @Output()
+  selectedApp = new EventEmitter();
+
+  animationEffect: any;
+
+  constructor() {
+    this.animationEffect = {};
+  }
+
+  ngOnInit() {}
+
+  selectView(app: AppItem) {
+    this.applyAnimation(app.id);
+    setTimeout(() => {
+      this.selectedApp.emit(app);
+    }, 20);
+  }
+
+  applyAnimation(key: any) {
+    this.animationEffect[key] = 'animated bounceIn';
+    setTimeout(() => {
+      this.animationEffect[key] = '';
+    }, 50);
+  }
+
+  trackByFn(index, item) {
+    return item && item.id ? item.id : index;
   }
 }

@@ -26,10 +26,11 @@ import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { sharedComponentsModule } from '../../../components/sharedComponents.module';
 import { AppsContainerComponent } from './apps-container/apps-container';
+import { AppItemComponent } from './app-item/app-item';
 
 @NgModule({
-  declarations: [AppsContainerComponent],
+  declarations: [AppsContainerComponent, AppItemComponent],
   imports: [IonicModule, TranslateModule.forChild({}), sharedComponentsModule],
-  exports: [AppsContainerComponent]
+  exports: [AppsContainerComponent, AppItemComponent]
 })
 export class AppsComponentsModule {}

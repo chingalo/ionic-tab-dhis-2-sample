@@ -29,10 +29,8 @@
     </ion-title>
   </ion-navbar>
 </ion-header>
-
-
-<ion-content padding>
-
-  <apps-container></apps-container>
-
+<ion-content>
+  <div class="animated fadeIn" *ngIf="currentUserApps$ |async as authorizedApps">
+    <apps-container (selectedApp)="onSelectApp($event)" [authorizedApps]="authorizedApps"></apps-container>
+  </div>
 </ion-content>

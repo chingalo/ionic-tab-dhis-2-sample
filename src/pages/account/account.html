@@ -31,8 +31,8 @@
 </ion-header>
 
 
-<ion-content padding>
-  <button large ion-button full text-capitalize (click)="logOut()">
-    <span [translate]="'log out'"></span>
-  </button>
+<ion-content>
+  <div class="animated fadeIn" *ngIf="currentUserAccountApps$ |async as authorizedApps">
+    <apps-container (selectedApp)="onSelectApp($event)" [authorizedApps]="authorizedApps"></apps-container>
+  </div>
 </ion-content>

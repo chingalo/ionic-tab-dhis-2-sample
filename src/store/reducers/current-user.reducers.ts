@@ -54,7 +54,7 @@ export function currentUserReducer(
       return { ...state, currentUserId: action.payload.id };
     }
     case CurrentUserActionTypes.ClearCurrentUser: {
-      return currentUserAdapter.removeAll({ ...state, currentUserId: null });
+      return { ...state, currentUserId: null };
     }
     default: {
       return state;
